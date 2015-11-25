@@ -23,6 +23,7 @@ import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
 import com.smapley.mode.Result;
+import com.smapley.mode.UserEntity;
 import com.smapley.utils.Code;
 import com.smapley.utils.MyData;
 
@@ -131,7 +132,7 @@ public class UserPicUpLoad extends HttpServlet {
 					}
 					result.flag = MyData.SUCC;
 					result.details = "";
-					result.data = JSON.toJSONString(user);
+					result.data = JSON.toJSONString(new UserEntity(user));
 				} else {
 					result.flag = MyData.OutLogin;
 					result.details = MyData.ERR_OutLogin;

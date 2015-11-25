@@ -19,9 +19,9 @@ public class File extends AbstractFile implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public File(Integer filId, Project project, User user, String name,
+	public File(Integer filId, Folder folder, User user, String name,
 			Integer type, String url, Timestamp creDate) {
-		super(filId, project, user, name, type, url, creDate);
+		super(filId, folder, user, name, type, url, creDate);
 	}
 
 }

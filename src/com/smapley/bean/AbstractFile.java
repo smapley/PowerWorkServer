@@ -12,7 +12,7 @@ public abstract class AbstractFile implements java.io.Serializable {
 	// Fields
 
 	private Integer filId;
-	private Project project;
+	private Folder folder;
 	private User user;
 	private String name;
 	private Integer type;
@@ -36,10 +36,10 @@ public abstract class AbstractFile implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public AbstractFile(Integer filId, Project project, User user, String name,
+	public AbstractFile(Integer filId, Folder folder, User user, String name,
 			Integer type, String url, Timestamp creDate) {
 		this.filId = filId;
-		this.project = project;
+		this.folder = folder;
 		this.user = user;
 		this.name = name;
 		this.type = type;
@@ -57,12 +57,12 @@ public abstract class AbstractFile implements java.io.Serializable {
 		this.filId = filId;
 	}
 
-	public Project getProject() {
-		return this.project;
+	public Folder getFolder() {
+		return this.folder;
 	}
 
-	public void setProject(Project project) {
-		this.project = project;
+	public void setFolder(Folder folder) {
+		this.folder = folder;
 	}
 
 	public User getUser() {

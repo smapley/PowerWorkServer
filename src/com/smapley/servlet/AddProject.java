@@ -19,6 +19,7 @@ import com.smapley.bean.Project;
 import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
+import com.smapley.mode.ProjectEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 
@@ -96,7 +97,7 @@ public class AddProject extends HttpServlet {
 						// 返回数据
 						result.flag = MyData.SUCC;
 						result.details = "";
-						result.data = JSON.toJSONString(project);
+						result.data = JSON.toJSONString(new ProjectEntity(project));
 					}else{
 						result.details=MyData.ERR_ProjectName;
 					}

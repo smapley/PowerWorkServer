@@ -10,12 +10,12 @@
             <column name="tas_id" />
             <generator class="assigned" />
         </id>
+        <many-to-one name="project" class="com.smapley.bean.Project" fetch="select">
+            <column name="pro_id" not-null="true" />
+        </many-to-one>
         <many-to-one name="user" class="com.smapley.bean.User" fetch="select">
             <column name="use_id" not-null="true" />
         </many-to-one>
-        <property name="proId" type="java.lang.Integer">
-            <column name="pro_id" not-null="true" />
-        </property>
         <property name="name" type="java.lang.String">
             <column name="name" />
         </property>
@@ -32,19 +32,35 @@
             <column name="progress" />
         </property>
         <property name="appointee" type="java.lang.Integer">
-            <column name="appointee" />
+            <column name="appointee">
+                <comment>执行者</comment>
+            </column>
         </property>
         <property name="annex" type="java.lang.Integer">
-            <column name="annex" />
+            <column name="annex">
+                <comment>附件</comment>
+            </column>
         </property>
         <property name="priority" type="java.lang.Integer">
-            <column name="priority" />
+            <column name="priority">
+                <comment>优先权</comment>
+            </column>
         </property>
         <property name="creDate" type="java.sql.Timestamp">
-            <column name="cre_date" length="19" />
+            <column name="cre_date" length="19">
+                <comment>创建日期</comment>
+            </column>
         </property>
         <property name="type" type="java.lang.Integer">
-            <column name="type" />
+            <column name="type">
+                <comment>类型</comment>
+            </column>
         </property>
+        <set name="tasUses" inverse="true">
+            <key>
+                <column name="tas_id" not-null="true" />
+            </key>
+            <one-to-many class="com.smapley.bean.TasUse" />
+        </set>
     </class>
 </hibernate-mapping>

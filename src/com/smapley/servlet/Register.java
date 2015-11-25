@@ -18,6 +18,7 @@ import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
 import com.smapley.mode.Result;
+import com.smapley.mode.UserEntity;
 import com.smapley.utils.Code;
 import com.smapley.utils.MyData;
 
@@ -77,7 +78,7 @@ public class Register extends HttpServlet {
 				System.out.println(user.getCreDate().toString());
 				user.setPassword(Code.enCode(user.getPassword(), user
 						.getCreDate().toString()));
-				result.data = JSON.toJSONString(user);
+				result.data = JSON.toJSONString(new UserEntity(user));
 				result.details = "";
 				result.flag = MyData.SUCC;
 			} else {

@@ -1,6 +1,8 @@
 package com.smapley.bean;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * AbstractTask entity provides the base persistence definition of the Task
@@ -12,8 +14,8 @@ public abstract class AbstractTask implements java.io.Serializable {
 	// Fields
 
 	private Integer tasId;
+	private Project project;
 	private User user;
-	private Integer proId;
 	private String name;
 	private String details;
 	private Timestamp staDate;
@@ -24,6 +26,7 @@ public abstract class AbstractTask implements java.io.Serializable {
 	private Integer priority;
 	private Timestamp creDate;
 	private Integer type;
+	private Set tasUses = new HashSet(0);
 
 	// Constructors
 
@@ -32,20 +35,20 @@ public abstract class AbstractTask implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public AbstractTask(Integer tasId, User user, Integer proId) {
+	public AbstractTask(Integer tasId, Project project, User user) {
 		this.tasId = tasId;
+		this.project = project;
 		this.user = user;
-		this.proId = proId;
 	}
 
 	/** full constructor */
-	public AbstractTask(Integer tasId, User user, Integer proId, String name,
+	public AbstractTask(Integer tasId, Project project, User user, String name,
 			String details, Timestamp staDate, Timestamp endDate,
 			Integer progress, Integer appointee, Integer annex,
-			Integer priority, Timestamp creDate, Integer type) {
+			Integer priority, Timestamp creDate, Integer type, Set tasUses) {
 		this.tasId = tasId;
+		this.project = project;
 		this.user = user;
-		this.proId = proId;
 		this.name = name;
 		this.details = details;
 		this.staDate = staDate;
@@ -56,6 +59,7 @@ public abstract class AbstractTask implements java.io.Serializable {
 		this.priority = priority;
 		this.creDate = creDate;
 		this.type = type;
+		this.tasUses = tasUses;
 	}
 
 	// Property accessors
@@ -68,20 +72,20 @@ public abstract class AbstractTask implements java.io.Serializable {
 		this.tasId = tasId;
 	}
 
+	public Project getProject() {
+		return this.project;
+	}
+
+	public void setProject(Project project) {
+		this.project = project;
+	}
+
 	public User getUser() {
 		return this.user;
 	}
 
 	public void setUser(User user) {
 		this.user = user;
-	}
-
-	public Integer getProId() {
-		return this.proId;
-	}
-
-	public void setProId(Integer proId) {
-		this.proId = proId;
 	}
 
 	public String getName() {
@@ -162,6 +166,14 @@ public abstract class AbstractTask implements java.io.Serializable {
 
 	public void setType(Integer type) {
 		this.type = type;
+	}
+
+	public Set getTasUses() {
+		return this.tasUses;
+	}
+
+	public void setTasUses(Set tasUses) {
+		this.tasUses = tasUses;
 	}
 
 }

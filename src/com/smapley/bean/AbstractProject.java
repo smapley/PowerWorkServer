@@ -18,7 +18,9 @@ public abstract class AbstractProject implements java.io.Serializable {
 	private String name;
 	private String picUrl;
 	private Timestamp creDate;
-	private Set files = new HashSet(0);
+	private Integer total;
+	private Set tasks = new HashSet(0);
+	private Set folders = new HashSet(0);
 	private Set proUses = new HashSet(0);
 
 	// Constructors
@@ -29,12 +31,15 @@ public abstract class AbstractProject implements java.io.Serializable {
 
 	/** full constructor */
 	public AbstractProject(User user, String name, String picUrl,
-			Timestamp creDate, Set files, Set proUses) {
+			Timestamp creDate, Integer total, Set tasks, Set folders,
+			Set proUses) {
 		this.user = user;
 		this.name = name;
 		this.picUrl = picUrl;
 		this.creDate = creDate;
-		this.files = files;
+		this.total = total;
+		this.tasks = tasks;
+		this.folders = folders;
 		this.proUses = proUses;
 	}
 
@@ -80,12 +85,28 @@ public abstract class AbstractProject implements java.io.Serializable {
 		this.creDate = creDate;
 	}
 
-	public Set getFiles() {
-		return this.files;
+	public Integer getTotal() {
+		return this.total;
 	}
 
-	public void setFiles(Set files) {
-		this.files = files;
+	public void setTotal(Integer total) {
+		this.total = total;
+	}
+
+	public Set getTasks() {
+		return this.tasks;
+	}
+
+	public void setTasks(Set tasks) {
+		this.tasks = tasks;
+	}
+
+	public Set getFolders() {
+		return this.folders;
+	}
+
+	public void setFolders(Set folders) {
+		this.folders = folders;
 	}
 
 	public Set getProUses() {

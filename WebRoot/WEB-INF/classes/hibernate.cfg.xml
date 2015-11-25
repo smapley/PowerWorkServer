@@ -35,6 +35,8 @@
 		<mapping resource="com/smapley/bean/File.hbm.xml" />
 		<mapping resource="com/smapley/bean/Feedbacks.hbm.xml" />
 		<mapping resource="com/smapley/bean/User.hbm.xml" />
+		<mapping resource="com/smapley/bean/TasUse.hbm.xml" />
+		<mapping resource="com/smapley/bean/Folder.hbm.xml" />
 
 
 	</session-factory>

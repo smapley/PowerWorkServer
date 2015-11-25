@@ -22,11 +22,20 @@
         <property name="creDate" type="java.sql.Timestamp">
             <column name="cre_date" length="19" />
         </property>
-        <set name="files" inverse="true">
+        <property name="total" type="java.lang.Integer">
+            <column name="total" />
+        </property>
+        <set name="tasks" inverse="true">
+            <key>
+                <column name="pro_id" not-null="true" />
+            </key>
+            <one-to-many class="com.smapley.bean.Task" />
+        </set>
+        <set name="folders" inverse="true">
             <key>
                 <column name="pro_id" />
             </key>
-            <one-to-many class="com.smapley.bean.File" />
+            <one-to-many class="com.smapley.bean.Folder" />
         </set>
         <set name="proUses" inverse="true">
             <key>

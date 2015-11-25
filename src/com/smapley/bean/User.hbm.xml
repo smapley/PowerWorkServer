@@ -43,23 +43,35 @@
             </key>
             <one-to-many class="com.smapley.bean.Project" />
         </set>
+        <set name="folders" inverse="true">
+            <key>
+                <column name="use_id" />
+            </key>
+            <one-to-many class="com.smapley.bean.Folder" />
+        </set>
+        <set name="tasUses" inverse="true">
+            <key>
+                <column name="use_id" not-null="true" />
+            </key>
+            <one-to-many class="com.smapley.bean.TasUse" />
+        </set>
         <set name="tasks" inverse="true">
             <key>
                 <column name="use_id" not-null="true" />
             </key>
             <one-to-many class="com.smapley.bean.Task" />
         </set>
-        <set name="files" inverse="true">
-            <key>
-                <column name="use_id" not-null="true" />
-            </key>
-            <one-to-many class="com.smapley.bean.File" />
-        </set>
         <set name="feedbackses" inverse="true">
             <key>
                 <column name="use_id" not-null="true" />
             </key>
             <one-to-many class="com.smapley.bean.Feedbacks" />
+        </set>
+        <set name="files" inverse="true">
+            <key>
+                <column name="use_id" not-null="true" />
+            </key>
+            <one-to-many class="com.smapley.bean.File" />
         </set>
         <set name="proUses" inverse="true">
             <key>

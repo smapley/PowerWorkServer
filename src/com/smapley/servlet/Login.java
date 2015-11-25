@@ -17,6 +17,7 @@ import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
 import com.smapley.mode.Result;
+import com.smapley.mode.UserEntity;
 import com.smapley.utils.Code;
 import com.smapley.utils.MyData;
 
@@ -79,7 +80,7 @@ public class Login extends HttpServlet {
 				user.setPassword(Code.enCode(user.getPassword(), user.getCreDate().toString()));
 				result.flag = MyData.SUCC;
 				result.details = "";
-				result.data = JSON.toJSONString(user);
+				result.data = JSON.toJSONString(new UserEntity(user));
 
 			} else {
 				result.details = MyData.ERR_PASSWORD;

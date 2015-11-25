@@ -24,9 +24,11 @@ public abstract class AbstractUser implements java.io.Serializable {
 	private Timestamp creDate;
 	private String skey;
 	private Set projects = new HashSet(0);
+	private Set folders = new HashSet(0);
+	private Set tasUses = new HashSet(0);
 	private Set tasks = new HashSet(0);
-	private Set files = new HashSet(0);
 	private Set feedbackses = new HashSet(0);
+	private Set files = new HashSet(0);
 	private Set proUses = new HashSet(0);
 
 	// Constructors
@@ -44,8 +46,8 @@ public abstract class AbstractUser implements java.io.Serializable {
 	/** full constructor */
 	public AbstractUser(String username, String password, String nickname,
 			String truename, String picUrl, String phone, Timestamp birthday,
-			Timestamp creDate, String skey, Set projects, Set tasks, Set files,
-			Set feedbackses, Set proUses) {
+			Timestamp creDate, String skey, Set projects, Set folders,
+			Set tasUses, Set tasks, Set feedbackses, Set files, Set proUses) {
 		this.username = username;
 		this.password = password;
 		this.nickname = nickname;
@@ -56,9 +58,11 @@ public abstract class AbstractUser implements java.io.Serializable {
 		this.creDate = creDate;
 		this.skey = skey;
 		this.projects = projects;
+		this.folders = folders;
+		this.tasUses = tasUses;
 		this.tasks = tasks;
-		this.files = files;
 		this.feedbackses = feedbackses;
+		this.files = files;
 		this.proUses = proUses;
 	}
 
@@ -152,6 +156,22 @@ public abstract class AbstractUser implements java.io.Serializable {
 		this.projects = projects;
 	}
 
+	public Set getFolders() {
+		return this.folders;
+	}
+
+	public void setFolders(Set folders) {
+		this.folders = folders;
+	}
+
+	public Set getTasUses() {
+		return this.tasUses;
+	}
+
+	public void setTasUses(Set tasUses) {
+		this.tasUses = tasUses;
+	}
+
 	public Set getTasks() {
 		return this.tasks;
 	}
@@ -160,20 +180,20 @@ public abstract class AbstractUser implements java.io.Serializable {
 		this.tasks = tasks;
 	}
 
-	public Set getFiles() {
-		return this.files;
-	}
-
-	public void setFiles(Set files) {
-		this.files = files;
-	}
-
 	public Set getFeedbackses() {
 		return this.feedbackses;
 	}
 
 	public void setFeedbackses(Set feedbackses) {
 		this.feedbackses = feedbackses;
+	}
+
+	public Set getFiles() {
+		return this.files;
+	}
+
+	public void setFiles(Set files) {
+		this.files = files;
 	}
 
 	public Set getProUses() {

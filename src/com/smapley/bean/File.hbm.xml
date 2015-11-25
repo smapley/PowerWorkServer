@@ -10,8 +10,8 @@
             <column name="fil_id" />
             <generator class="assigned" />
         </id>
-        <many-to-one name="project" class="com.smapley.bean.Project" fetch="select">
-            <column name="pro_id" />
+        <many-to-one name="folder" class="com.smapley.bean.Folder" fetch="select">
+            <column name="fol_id" />
         </many-to-one>
         <many-to-one name="user" class="com.smapley.bean.User" fetch="select">
             <column name="use_id" not-null="true" />
