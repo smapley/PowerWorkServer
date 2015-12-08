@@ -15,18 +15,15 @@ public abstract class AbstractTask implements java.io.Serializable {
 
 	private Integer tasId;
 	private Project project;
-	private User user;
 	private String name;
-	private String details;
 	private Timestamp staDate;
 	private Timestamp endDate;
 	private Integer progress;
-	private Integer appointee;
-	private Integer annex;
 	private Integer priority;
 	private Timestamp creDate;
-	private Integer type;
+	private Set taskDetailses = new HashSet(0);
 	private Set tasUses = new HashSet(0);
+	private Set dynamics = new HashSet(0);
 
 	// Constructors
 
@@ -35,31 +32,24 @@ public abstract class AbstractTask implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public AbstractTask(Integer tasId, Project project, User user) {
-		this.tasId = tasId;
+	public AbstractTask(Project project) {
 		this.project = project;
-		this.user = user;
 	}
 
 	/** full constructor */
-	public AbstractTask(Integer tasId, Project project, User user, String name,
-			String details, Timestamp staDate, Timestamp endDate,
-			Integer progress, Integer appointee, Integer annex,
-			Integer priority, Timestamp creDate, Integer type, Set tasUses) {
-		this.tasId = tasId;
+	public AbstractTask(Project project, String name, Timestamp staDate,
+			Timestamp endDate, Integer progress, Integer priority,
+			Timestamp creDate, Set taskDetailses, Set tasUses, Set dynamics) {
 		this.project = project;
-		this.user = user;
 		this.name = name;
-		this.details = details;
 		this.staDate = staDate;
 		this.endDate = endDate;
 		this.progress = progress;
-		this.appointee = appointee;
-		this.annex = annex;
 		this.priority = priority;
 		this.creDate = creDate;
-		this.type = type;
+		this.taskDetailses = taskDetailses;
 		this.tasUses = tasUses;
+		this.dynamics = dynamics;
 	}
 
 	// Property accessors
@@ -80,28 +70,12 @@ public abstract class AbstractTask implements java.io.Serializable {
 		this.project = project;
 	}
 
-	public User getUser() {
-		return this.user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
 	public String getName() {
 		return this.name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getDetails() {
-		return this.details;
-	}
-
-	public void setDetails(String details) {
-		this.details = details;
 	}
 
 	public Timestamp getStaDate() {
@@ -128,22 +102,6 @@ public abstract class AbstractTask implements java.io.Serializable {
 		this.progress = progress;
 	}
 
-	public Integer getAppointee() {
-		return this.appointee;
-	}
-
-	public void setAppointee(Integer appointee) {
-		this.appointee = appointee;
-	}
-
-	public Integer getAnnex() {
-		return this.annex;
-	}
-
-	public void setAnnex(Integer annex) {
-		this.annex = annex;
-	}
-
 	public Integer getPriority() {
 		return this.priority;
 	}
@@ -160,12 +118,12 @@ public abstract class AbstractTask implements java.io.Serializable {
 		this.creDate = creDate;
 	}
 
-	public Integer getType() {
-		return this.type;
+	public Set getTaskDetailses() {
+		return this.taskDetailses;
 	}
 
-	public void setType(Integer type) {
-		this.type = type;
+	public void setTaskDetailses(Set taskDetailses) {
+		this.taskDetailses = taskDetailses;
 	}
 
 	public Set getTasUses() {
@@ -174,6 +132,14 @@ public abstract class AbstractTask implements java.io.Serializable {
 
 	public void setTasUses(Set tasUses) {
 		this.tasUses = tasUses;
+	}
+
+	public Set getDynamics() {
+		return this.dynamics;
+	}
+
+	public void setDynamics(Set dynamics) {
+		this.dynamics = dynamics;
 	}
 
 }

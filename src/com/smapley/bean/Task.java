@@ -15,17 +15,16 @@ public class Task extends AbstractTask implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public Task(Integer tasId, Project project, User user) {
-		super(tasId, project, user);
+	public Task(Project project) {
+		super(project);
 	}
 
 	/** full constructor */
-	public Task(Integer tasId, Project project, User user, String name,
-			String details, Timestamp staDate, Timestamp endDate,
-			Integer progress, Integer appointee, Integer annex,
-			Integer priority, Timestamp creDate, Integer type, Set tasUses) {
-		super(tasId, project, user, name, details, staDate, endDate, progress,
-				appointee, annex, priority, creDate, type, tasUses);
+	public Task(Project project, String name, Timestamp staDate,
+			Timestamp endDate, Integer progress, Integer priority,
+			Timestamp creDate, Set taskDetailses, Set tasUses, Set dynamics) {
+		super(project, name, staDate, endDate, progress, priority, creDate,
+				taskDetailses, tasUses, dynamics);
 	}
 
 }

@@ -24,12 +24,8 @@ public class TaskDAO extends BaseHibernateDAO {
 	private static final Logger log = LoggerFactory.getLogger(TaskDAO.class);
 	// property constants
 	public static final String NAME = "name";
-	public static final String DETAILS = "details";
 	public static final String PROGRESS = "progress";
-	public static final String APPOINTEE = "appointee";
-	public static final String ANNEX = "annex";
 	public static final String PRIORITY = "priority";
-	public static final String TYPE = "type";
 
 	public void save(Task transientInstance) {
 		log.debug("saving Task instance");
@@ -98,28 +94,12 @@ public class TaskDAO extends BaseHibernateDAO {
 		return findByProperty(NAME, name);
 	}
 
-	public List findByDetails(Object details) {
-		return findByProperty(DETAILS, details);
-	}
-
 	public List findByProgress(Object progress) {
 		return findByProperty(PROGRESS, progress);
 	}
 
-	public List findByAppointee(Object appointee) {
-		return findByProperty(APPOINTEE, appointee);
-	}
-
-	public List findByAnnex(Object annex) {
-		return findByProperty(ANNEX, annex);
-	}
-
 	public List findByPriority(Object priority) {
 		return findByProperty(PRIORITY, priority);
-	}
-
-	public List findByType(Object type) {
-		return findByProperty(TYPE, type);
 	}
 
 	public List findAll() {

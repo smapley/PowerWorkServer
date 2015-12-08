@@ -15,9 +15,9 @@ public class Project extends AbstractProject implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public Project(User user, String name, String picUrl, Timestamp creDate,
-			Integer total, Set tasks, Set folders, Set proUses) {
-		super(user, name, picUrl, creDate, total, tasks, folders, proUses);
+	public Project(String name, String picUrl, Timestamp creDate, Set tasks,
+			Set folders, Set proUses, Set dynamics) {
+		super(name, picUrl, creDate, tasks, folders, proUses, dynamics);
 	}
 
 }

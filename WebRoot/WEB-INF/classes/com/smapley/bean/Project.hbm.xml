@@ -10,9 +10,6 @@
             <column name="pro_id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="user" class="com.smapley.bean.User" fetch="select">
-            <column name="use_id" />
-        </many-to-one>
         <property name="name" type="java.lang.String">
             <column name="name" />
         </property>
@@ -21,9 +18,6 @@
         </property>
         <property name="creDate" type="java.sql.Timestamp">
             <column name="cre_date" length="19" />
-        </property>
-        <property name="total" type="java.lang.Integer">
-            <column name="total" />
         </property>
         <set name="tasks" inverse="true">
             <key>
@@ -42,6 +36,12 @@
                 <column name="pro_id" not-null="true" />
             </key>
             <one-to-many class="com.smapley.bean.ProUse" />
+        </set>
+        <set name="dynamics" inverse="true">
+            <key>
+                <column name="pro_id" />
+            </key>
+            <one-to-many class="com.smapley.bean.Dynamic" />
         </set>
     </class>
 </hibernate-mapping>

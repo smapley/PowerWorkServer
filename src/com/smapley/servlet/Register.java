@@ -67,6 +67,7 @@ public class Register extends HttpServlet {
 				// 不存在相同用户名，插入新用户
 				User user = new User();
 				user.setUsername(username);
+				user.setTruename(username);
 				user.setPassword(password);
 				user.setPhone(phone);
 				user.setCreDate(new Timestamp(System.currentTimeMillis()));

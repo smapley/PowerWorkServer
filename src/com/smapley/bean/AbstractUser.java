@@ -23,10 +23,12 @@ public abstract class AbstractUser implements java.io.Serializable {
 	private Timestamp birthday;
 	private Timestamp creDate;
 	private String skey;
-	private Set projects = new HashSet(0);
+	private Set praises = new HashSet(0);
+	private Set notes = new HashSet(0);
 	private Set folders = new HashSet(0);
+	private Set discusses = new HashSet(0);
 	private Set tasUses = new HashSet(0);
-	private Set tasks = new HashSet(0);
+	private Set dynamics = new HashSet(0);
 	private Set feedbackses = new HashSet(0);
 	private Set files = new HashSet(0);
 	private Set proUses = new HashSet(0);
@@ -46,8 +48,9 @@ public abstract class AbstractUser implements java.io.Serializable {
 	/** full constructor */
 	public AbstractUser(String username, String password, String nickname,
 			String truename, String picUrl, String phone, Timestamp birthday,
-			Timestamp creDate, String skey, Set projects, Set folders,
-			Set tasUses, Set tasks, Set feedbackses, Set files, Set proUses) {
+			Timestamp creDate, String skey, Set praises, Set notes,
+			Set folders, Set discusses, Set tasUses, Set dynamics,
+			Set feedbackses, Set files, Set proUses) {
 		this.username = username;
 		this.password = password;
 		this.nickname = nickname;
@@ -57,10 +60,12 @@ public abstract class AbstractUser implements java.io.Serializable {
 		this.birthday = birthday;
 		this.creDate = creDate;
 		this.skey = skey;
-		this.projects = projects;
+		this.praises = praises;
+		this.notes = notes;
 		this.folders = folders;
+		this.discusses = discusses;
 		this.tasUses = tasUses;
-		this.tasks = tasks;
+		this.dynamics = dynamics;
 		this.feedbackses = feedbackses;
 		this.files = files;
 		this.proUses = proUses;
@@ -148,12 +153,20 @@ public abstract class AbstractUser implements java.io.Serializable {
 		this.skey = skey;
 	}
 
-	public Set getProjects() {
-		return this.projects;
+	public Set getPraises() {
+		return this.praises;
 	}
 
-	public void setProjects(Set projects) {
-		this.projects = projects;
+	public void setPraises(Set praises) {
+		this.praises = praises;
+	}
+
+	public Set getNotes() {
+		return this.notes;
+	}
+
+	public void setNotes(Set notes) {
+		this.notes = notes;
 	}
 
 	public Set getFolders() {
@@ -164,6 +177,14 @@ public abstract class AbstractUser implements java.io.Serializable {
 		this.folders = folders;
 	}
 
+	public Set getDiscusses() {
+		return this.discusses;
+	}
+
+	public void setDiscusses(Set discusses) {
+		this.discusses = discusses;
+	}
+
 	public Set getTasUses() {
 		return this.tasUses;
 	}
@@ -172,12 +193,12 @@ public abstract class AbstractUser implements java.io.Serializable {
 		this.tasUses = tasUses;
 	}
 
-	public Set getTasks() {
-		return this.tasks;
+	public Set getDynamics() {
+		return this.dynamics;
 	}
 
-	public void setTasks(Set tasks) {
-		this.tasks = tasks;
+	public void setDynamics(Set dynamics) {
+		this.dynamics = dynamics;
 	}
 
 	public Set getFeedbackses() {

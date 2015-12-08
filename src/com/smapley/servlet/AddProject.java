@@ -15,6 +15,9 @@ import org.hibernate.Transaction;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.HibernateSessionFactory;
+import com.smapley.bean.ProUse;
+import com.smapley.bean.ProUseDAO;
+import com.smapley.bean.ProUseId;
 import com.smapley.bean.Project;
 import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
@@ -29,8 +32,9 @@ import com.smapley.utils.MyData;
 @WebServlet("/AddProject")
 public class AddProject extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private UserDAO userDAO=new UserDAO();
-	private ProjectDAO projectDAO=new ProjectDAO();
+	private UserDAO userDAO = new UserDAO();
+	private ProjectDAO projectDAO = new ProjectDAO();
+	private ProUseDAO proUseDAO = new ProUseDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -75,31 +79,39 @@ public class AddProject extends HttpServlet {
 			if (user != null) {
 				// 判断skey
 				if (user.getSkey().equals(skey)) {
-					boolean isHad=false;
-					for(Project project:(Set<Project>)user.getProjects()){
-						if(project.getName().equals(name)){
-							isHad=true;
+					boolean isHad = false;
+					for (ProUse prouse : (Set<ProUse>) user.getProUses()) {
+						if (prouse.getId().getProject().getName().equals(name)) {
+							isHad = true;
 							break;
 						}
 					}
 					if (!isHad) {
 						// 设置新信息
 						Project project = new Project();
-						project.setUser(user);
 						project.setName(name);
 						project.setCreDate(new Timestamp(System
 								.currentTimeMillis()));
-						Transaction treTransaction = HibernateSessionFactory.getSession().beginTransaction();
+						Transaction treTransaction = HibernateSessionFactory
+								.getSession().beginTransaction();
 						projectDAO.save(project);
+						ProUseId proUseId = new ProUseId();
+						proUseId.setProject(project);
+						proUseId.setUser(user);
+						ProUse prouse = new ProUse();
+						prouse.setId(proUseId);
+						prouse.setRank(0);
+						proUseDAO.save(prouse);
 						treTransaction.commit();
 						project = (Project) projectDAO.findByExample(project)
 								.get(0);
 						// 返回数据
 						result.flag = MyData.SUCC;
 						result.details = "";
-						result.data = JSON.toJSONString(new ProjectEntity(project));
-					}else{
-						result.details=MyData.ERR_ProjectName;
+						result.data = JSON.toJSONString(new ProjectEntity(
+								project));
+					} else {
+						result.details = MyData.ERR_ProjectName;
 					}
 				} else {
 					result.flag = MyData.OutLogin;

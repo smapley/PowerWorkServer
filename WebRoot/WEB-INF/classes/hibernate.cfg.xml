@@ -30,13 +30,19 @@
 		<property name="show_sql">true</property>
 		<!--指定Hibernate映射文件路径 -->
 		<mapping resource="com/smapley/bean/Task.hbm.xml" />
+		<mapping resource="com/smapley/bean/Discuss.hbm.xml" />
 		<mapping resource="com/smapley/bean/Project.hbm.xml" />
+		<mapping resource="com/smapley/bean/Praise.hbm.xml" />
 		<mapping resource="com/smapley/bean/ProUse.hbm.xml" />
+		<mapping resource="com/smapley/bean/Folder.hbm.xml" />
 		<mapping resource="com/smapley/bean/File.hbm.xml" />
 		<mapping resource="com/smapley/bean/Feedbacks.hbm.xml" />
 		<mapping resource="com/smapley/bean/User.hbm.xml" />
+		<mapping resource="com/smapley/bean/Dynamic.hbm.xml" />
 		<mapping resource="com/smapley/bean/TasUse.hbm.xml" />
-		<mapping resource="com/smapley/bean/Folder.hbm.xml" />
+		<mapping resource="com/smapley/bean/Note.hbm.xml" />
+		<mapping resource="com/smapley/bean/NoteDetails.hbm.xml" />
+		<mapping resource="com/smapley/bean/TaskDetails.hbm.xml" />
 
 
 	</session-factory>

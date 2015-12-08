@@ -13,6 +13,9 @@
             <key-many-to-one name="user" class="com.smapley.bean.User">
                 <column name="use_id" />
             </key-many-to-one>
+            <key-property name="rank" type="java.lang.Integer">
+                <column name="rank" />
+            </key-property>
         </composite-id>
     </class>
 </hibernate-mapping>

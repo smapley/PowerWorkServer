@@ -12,8 +12,8 @@ public class TasUseId extends AbstractTasUseId implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public TasUseId(Task task, User user) {
-		super(task, user);
+	public TasUseId(Task task, User user, Integer rank) {
+		super(task, user, rank);
 	}
 
 }

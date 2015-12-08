@@ -25,7 +25,6 @@ public class ProjectDAO extends BaseHibernateDAO {
 	// property constants
 	public static final String NAME = "name";
 	public static final String PIC_URL = "picUrl";
-	public static final String TOTAL = "total";
 
 	public void save(Project transientInstance) {
 		log.debug("saving Project instance");
@@ -97,10 +96,6 @@ public class ProjectDAO extends BaseHibernateDAO {
 
 	public List findByPicUrl(Object picUrl) {
 		return findByProperty(PIC_URL, picUrl);
-	}
-
-	public List findByTotal(Object total) {
-		return findByProperty(TOTAL, total);
 	}
 
 	public List findAll() {

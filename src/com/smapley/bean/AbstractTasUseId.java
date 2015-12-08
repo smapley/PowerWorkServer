@@ -11,6 +11,7 @@ public abstract class AbstractTasUseId implements java.io.Serializable {
 
 	private Task task;
 	private User user;
+	private Integer rank;
 
 	// Constructors
 
@@ -19,9 +20,10 @@ public abstract class AbstractTasUseId implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public AbstractTasUseId(Task task, User user) {
+	public AbstractTasUseId(Task task, User user, Integer rank) {
 		this.task = task;
 		this.user = user;
+		this.rank = rank;
 	}
 
 	// Property accessors
@@ -42,6 +44,14 @@ public abstract class AbstractTasUseId implements java.io.Serializable {
 		this.user = user;
 	}
 
+	public Integer getRank() {
+		return this.rank;
+	}
+
+	public void setRank(Integer rank) {
+		this.rank = rank;
+	}
+
 	public boolean equals(Object other) {
 		if ((this == other))
 			return true;
@@ -56,7 +66,10 @@ public abstract class AbstractTasUseId implements java.io.Serializable {
 				castOther.getTask())))
 				&& ((this.getUser() == castOther.getUser()) || (this.getUser() != null
 						&& castOther.getUser() != null && this.getUser()
-						.equals(castOther.getUser())));
+						.equals(castOther.getUser())))
+				&& ((this.getRank() == castOther.getRank()) || (this.getRank() != null
+						&& castOther.getRank() != null && this.getRank()
+						.equals(castOther.getRank())));
 	}
 
 	public int hashCode() {
@@ -66,6 +79,8 @@ public abstract class AbstractTasUseId implements java.io.Serializable {
 				+ (getTask() == null ? 0 : this.getTask().hashCode());
 		result = 37 * result
 				+ (getUser() == null ? 0 : this.getUser().hashCode());
+		result = 37 * result
+				+ (getRank() == null ? 0 : this.getRank().hashCode());
 		return result;
 	}
 

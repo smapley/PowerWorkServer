@@ -72,8 +72,9 @@ public class ProjectList extends HttpServlet {
 				if (user.getSkey().equals(skey)) {
 					List<ProjectEntity> listPro = new ArrayList<ProjectEntity>();
 					for (ProUse proUse : (Set<ProUse>) user.getProUses()) {
-						listPro.add(new ProjectEntity(proUse.getId()
-								.getProject()));
+						ProjectEntity project=new ProjectEntity(proUse.getId()
+								.getProject());
+						listPro.add(project);
 					}
 					// 返回数据
 					result.flag = MyData.SUCC;

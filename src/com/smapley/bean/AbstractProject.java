@@ -14,14 +14,13 @@ public abstract class AbstractProject implements java.io.Serializable {
 	// Fields
 
 	private Integer proId;
-	private User user;
 	private String name;
 	private String picUrl;
 	private Timestamp creDate;
-	private Integer total;
 	private Set tasks = new HashSet(0);
 	private Set folders = new HashSet(0);
 	private Set proUses = new HashSet(0);
+	private Set dynamics = new HashSet(0);
 
 	// Constructors
 
@@ -30,17 +29,15 @@ public abstract class AbstractProject implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public AbstractProject(User user, String name, String picUrl,
-			Timestamp creDate, Integer total, Set tasks, Set folders,
-			Set proUses) {
-		this.user = user;
+	public AbstractProject(String name, String picUrl, Timestamp creDate,
+			Set tasks, Set folders, Set proUses, Set dynamics) {
 		this.name = name;
 		this.picUrl = picUrl;
 		this.creDate = creDate;
-		this.total = total;
 		this.tasks = tasks;
 		this.folders = folders;
 		this.proUses = proUses;
+		this.dynamics = dynamics;
 	}
 
 	// Property accessors
@@ -51,14 +48,6 @@ public abstract class AbstractProject implements java.io.Serializable {
 
 	public void setProId(Integer proId) {
 		this.proId = proId;
-	}
-
-	public User getUser() {
-		return this.user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 
 	public String getName() {
@@ -85,14 +74,6 @@ public abstract class AbstractProject implements java.io.Serializable {
 		this.creDate = creDate;
 	}
 
-	public Integer getTotal() {
-		return this.total;
-	}
-
-	public void setTotal(Integer total) {
-		this.total = total;
-	}
-
 	public Set getTasks() {
 		return this.tasks;
 	}
@@ -115,6 +96,14 @@ public abstract class AbstractProject implements java.io.Serializable {
 
 	public void setProUses(Set proUses) {
 		this.proUses = proUses;
+	}
+
+	public Set getDynamics() {
+		return this.dynamics;
+	}
+
+	public void setDynamics(Set dynamics) {
+		this.dynamics = dynamics;
 	}
 
 }

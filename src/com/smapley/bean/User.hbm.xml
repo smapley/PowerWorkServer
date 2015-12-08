@@ -37,11 +37,17 @@
         <property name="skey" type="java.lang.String">
             <column name="skey" />
         </property>
-        <set name="projects" inverse="true">
+        <set name="praises" inverse="true">
             <key>
                 <column name="use_id" />
             </key>
-            <one-to-many class="com.smapley.bean.Project" />
+            <one-to-many class="com.smapley.bean.Praise" />
+        </set>
+        <set name="notes" inverse="true">
+            <key>
+                <column name="use_id" />
+            </key>
+            <one-to-many class="com.smapley.bean.Note" />
         </set>
         <set name="folders" inverse="true">
             <key>
@@ -49,17 +55,23 @@
             </key>
             <one-to-many class="com.smapley.bean.Folder" />
         </set>
+        <set name="discusses" inverse="true">
+            <key>
+                <column name="use_id" />
+            </key>
+            <one-to-many class="com.smapley.bean.Discuss" />
+        </set>
         <set name="tasUses" inverse="true">
             <key>
                 <column name="use_id" not-null="true" />
             </key>
             <one-to-many class="com.smapley.bean.TasUse" />
         </set>
-        <set name="tasks" inverse="true">
+        <set name="dynamics" inverse="true">
             <key>
-                <column name="use_id" not-null="true" />
+                <column name="use_id" />
             </key>
-            <one-to-many class="com.smapley.bean.Task" />
+            <one-to-many class="com.smapley.bean.Dynamic" />
         </set>
         <set name="feedbackses" inverse="true">
             <key>

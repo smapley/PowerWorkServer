@@ -3,6 +3,8 @@ package com.smapley.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,15 +18,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.hibernate.Transaction;
 
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
+import com.smapley.bean.Note;
+import com.smapley.bean.NoteDAO;
+import com.smapley.bean.NoteDetails;
+import com.smapley.bean.NoteDetailsDAO;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
 import com.smapley.mode.Result;
-import com.smapley.mode.UserEntity;
-import com.smapley.utils.Code;
 import com.smapley.utils.MyData;
 
 /**
@@ -40,10 +42,12 @@ import com.smapley.utils.MyData;
  * 
  */
 @SuppressWarnings("serial")
-@WebServlet("/FileUpLoad")
-public class FileUpLoad extends HttpServlet {
+@WebServlet("/AddNote")
+public class AddNote extends HttpServlet {
 
-	private UserDAO userDAO=new UserDAO();
+	private UserDAO userDAO = new UserDAO();
+	private NoteDAO noteDAO = new NoteDAO();
+	private NoteDetailsDAO noteDetailsDAO = new NoteDetailsDAO();
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -56,52 +60,70 @@ public class FileUpLoad extends HttpServlet {
 		Result result = new Result();
 		User user = null;
 
-		System.out.println("---FileUpLoad---");
+		System.out.println("---AddNote---");
 
 		// 获得磁盘文件条目工厂
 		DiskFileItemFactory factory = new DiskFileItemFactory();
 		// 获取文件需要上传到的路径
 		@SuppressWarnings("deprecation")
-		String path = request.getRealPath("/upload/pic/user_pic");
-
+		String picPath = request.getRealPath("/upload/note/pic");
+		@SuppressWarnings("deprecation")
+		String voicePath = request.getRealPath("/upload/note/voice");
 		// 如果没以下两行设置的话，上传大的 文件 会占用 很多内存，
 		// 设置暂时存放的 存储室 , 这个存储室，可以和 最终存储文件 的目录不同
 		/**
 		 * 原理 它是先存到 暂时存储室，然后在真正写到 对应目录的硬盘上， 按理来说 当上传一个文件时，其实是上传了两份，第一个是以 .tem
 		 * 格式的 然后再将其真正写到 对应目录的硬盘上
 		 */
-		File file = new File(path);
-		if (!file.exists()) {
-			file.mkdirs();
+		File picFile = new File(picPath);
+		if (!picFile.exists()) {
+			picFile.mkdirs();
 		}
-		factory.setRepository(file);
+		File voiceFile = new File(voicePath);
+		if (!voiceFile.exists()) {
+			voiceFile.mkdirs();
+		}
+		factory.setRepository(picFile);
 		// 设置 缓存的大小，当上传文件的容量超过该缓存时，直接放到 暂时存储室
 		factory.setSizeThreshold(1024 * 1024);
-
 		// 高水平的API文件上传处理
 		ServletFileUpload upload = new ServletFileUpload(factory);
 
 		try {
 			// 可以上传多个文件
 			List<FileItem> list = (List<FileItem>) upload.parseRequest(request);
-			Map<String, String> map = new HashMap<String, String>();
+			Map<String, FileItem> map = new HashMap<String, FileItem>();
 			for (FileItem item : list) {
-				// 如果获取的 表单信息是普通的 文本 信息
-				if (item.isFormField()) {
-					// 获取表单的属性名字
-					map.put(item.getFieldName(), item.getString());
-				}
+				// 获取表单的属性名字
+				map.put(item.getFieldName(), item);
 			}
-			user = userDAO.findById(Integer.parseInt(map.get("user_id")));
+			user = userDAO.findById(Integer.parseInt(map.get("user_id")
+					.getString()));
 			if (user != null) {
-				if (user.getSkey().equals(map.get("skey"))) {
-					for (FileItem item : list) {
-						if (!item.isFormField()) {
-							// 获取表单的属性名字
-							String name = item.getFieldName();
-							System.out.println("---" + name + "---");
-							// 对传入的非 简单的字符串进行处理 ，比如说二进制的 图片，电影这些
-
+				if (user.getSkey().equals(map.get("skey").getString("utf-8"))) {
+					// 添加note
+					Note note = new Note();
+					note.setName(map.get("name").getString("utf-8"));
+					note.setUser(user);
+					note.setAlarm(new Timestamp(Long.parseLong(map.get("alarm")
+							.getString("utf-8"))));
+					note.setCreDate(new Timestamp(System.currentTimeMillis()));
+					noteDAO.save(note);
+					note = (Note) noteDAO.findByExample(note).get(0);
+					for (int i = 0; i < Integer.parseInt(map.get("size")
+							.getString("utf-8")); i++) {
+						NoteDetails noteDetails = new NoteDetails();
+						noteDetails.setNote(note);
+						int type = Integer.parseInt(map.get("type" + i)
+								.getString("utf-8"));
+						noteDetails.setType(type);
+						switch (type) {
+						case 5:
+							noteDetails.setText(map.get("text" + i).getString(
+									"utf-8"));
+							break;
+						case 4:
+							FileItem item = map.get("file" + i);
 							/**
 							 * 以下三步，主要获取 上传文件的名字
 							 */
@@ -114,25 +136,38 @@ public class FileUpLoad extends HttpServlet {
 							filename = user.getUseId() + "_"
 									+ System.currentTimeMillis() + "."
 									+ filename.split("\\.")[1];
-							System.out.println("---" + filename + "---");
 							// 真正写到磁盘上
 							// 它抛出的异常 用exception 捕捉
-							item.write(new File(path, filename));// 第三方提供的
+							item.write(new File(voiceFile, filename));// 第三方提供的
+							noteDetails.setPath("voice/" + filename);
+							noteDetails.setLength(new Time(Long.parseLong(map
+									.get("length" + i).getString())));
+							break;
 
-							user.setPicUrl("user_pic/" + filename);
-							Transaction transaction = HibernateSessionFactory.getSession()
-									.beginTransaction();
-							userDAO.merge(user);
-							transaction.commit();
-							// 加密密码并返回数据
-							user.setPassword(Code.enCode(user.getPassword(),
-									user.getCreDate().toString()));
-
+						case 3:
+							FileItem item1 = map.get("file" + i);
+							/**
+							 * 以下三步，主要获取 上传文件的名字
+							 */
+							// 获取路径名
+							String value1 = item1.getName();
+							// 索引到最后一个反斜杠
+							int start1 = value1.lastIndexOf("\\");
+							// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
+							String filename1 = value1.substring(start1 + 1);
+							filename1 = user.getUseId() + "_"
+									+ System.currentTimeMillis() + "."
+									+ filename1.split("\\.")[1];
+							// 真正写到磁盘上
+							// 它抛出的异常 用exception 捕捉
+							item1.write(new File(picPath, filename1));// 第三方提供的
+							noteDetails.setPath("pic/" + filename1);
+							break;
 						}
+						noteDetailsDAO.save(noteDetails);
 					}
 					result.flag = MyData.SUCC;
 					result.details = "";
-					result.data = JSON.toJSONString(new UserEntity(user));
 				} else {
 					result.flag = MyData.OutLogin;
 					result.details = MyData.ERR_OutLogin;

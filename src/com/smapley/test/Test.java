@@ -25,14 +25,10 @@ public class Test {
 	@org.junit.Test
 	public void save(){
 		
-		UserDAO userDAO=new UserDAO();
 		ProjectDAO projectDAO=new ProjectDAO();
 		Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
-		User user=userDAO.findById(110);
 		Project project=new Project();
-		project.setName("asdfasdfa");
-		project.setUser(user);
-		
+		project.setName("asdfasdfa");	
 		projectDAO.save(project);
 		transaction.commit();
 	}

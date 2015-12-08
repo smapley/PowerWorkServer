@@ -8,19 +8,13 @@
     <class name="com.smapley.bean.Task" table="Task" catalog="PowerWork">
         <id name="tasId" type="java.lang.Integer">
             <column name="tas_id" />
-            <generator class="assigned" />
+            <generator class="identity" />
         </id>
         <many-to-one name="project" class="com.smapley.bean.Project" fetch="select">
             <column name="pro_id" not-null="true" />
         </many-to-one>
-        <many-to-one name="user" class="com.smapley.bean.User" fetch="select">
-            <column name="use_id" not-null="true" />
-        </many-to-one>
         <property name="name" type="java.lang.String">
             <column name="name" />
-        </property>
-        <property name="details" type="java.lang.String">
-            <column name="details" />
         </property>
         <property name="staDate" type="java.sql.Timestamp">
             <column name="sta_date" length="19" />
@@ -30,16 +24,6 @@
         </property>
         <property name="progress" type="java.lang.Integer">
             <column name="progress" />
-        </property>
-        <property name="appointee" type="java.lang.Integer">
-            <column name="appointee">
-                <comment>执行者</comment>
-            </column>
-        </property>
-        <property name="annex" type="java.lang.Integer">
-            <column name="annex">
-                <comment>附件</comment>
-            </column>
         </property>
         <property name="priority" type="java.lang.Integer">
             <column name="priority">
@@ -51,16 +35,23 @@
                 <comment>创建日期</comment>
             </column>
         </property>
-        <property name="type" type="java.lang.Integer">
-            <column name="type">
-                <comment>类型</comment>
-            </column>
-        </property>
+        <set name="taskDetailses" inverse="true">
+            <key>
+                <column name="tas_id" />
+            </key>
+            <one-to-many class="com.smapley.bean.TaskDetails" />
+        </set>
         <set name="tasUses" inverse="true">
             <key>
                 <column name="tas_id" not-null="true" />
             </key>
             <one-to-many class="com.smapley.bean.TasUse" />
+        </set>
+        <set name="dynamics" inverse="true">
+            <key>
+                <column name="tas_id" />
+            </key>
+            <one-to-many class="com.smapley.bean.Dynamic" />
         </set>
     </class>
 </hibernate-mapping>
