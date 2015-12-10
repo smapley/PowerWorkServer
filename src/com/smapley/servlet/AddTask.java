@@ -195,6 +195,7 @@ public class AddTask extends HttpServlet {
 						}
 						taskDetailsDAO.save(taskDetails);
 					}
+					
 					transaction.commit();
 					result.flag = MyData.SUCC;
 					result.details = "";

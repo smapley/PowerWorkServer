@@ -17,7 +17,7 @@ public abstract class AbstractDynamic implements java.io.Serializable {
 	private Project project;
 	private User user;
 	private Task task;
-	private Timestamp cerDate;
+	private Timestamp creDate;
 	private Integer type;
 	private String picUrl;
 	private Set praises = new HashSet(0);
@@ -31,12 +31,12 @@ public abstract class AbstractDynamic implements java.io.Serializable {
 
 	/** full constructor */
 	public AbstractDynamic(Project project, User user, Task task,
-			Timestamp cerDate, Integer type, String picUrl, Set praises,
+			Timestamp creDate, Integer type, String picUrl, Set praises,
 			Set discusses) {
 		this.project = project;
 		this.user = user;
 		this.task = task;
-		this.cerDate = cerDate;
+		this.creDate = creDate;
 		this.type = type;
 		this.picUrl = picUrl;
 		this.praises = praises;
@@ -77,12 +77,12 @@ public abstract class AbstractDynamic implements java.io.Serializable {
 		this.task = task;
 	}
 
-	public Timestamp getCerDate() {
-		return this.cerDate;
+	public Timestamp getCreDate() {
+		return this.creDate;
 	}
 
-	public void setCerDate(Timestamp cerDate) {
-		this.cerDate = cerDate;
+	public void setCreDate(Timestamp creDate) {
+		this.creDate = creDate;
 	}
 
 	public Integer getType() {

@@ -24,8 +24,8 @@ import com.smapley.utils.MyData;
 /**
  * Servlet implementation class Login
  */
-@WebServlet("/Dynamic")
-public class Dynamic extends HttpServlet {
+@WebServlet("/DynamicList")
+public class DynamicList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private UserDAO userDAO = new UserDAO();
 	private ProjectDAO projectDAO = new ProjectDAO();
@@ -33,7 +33,7 @@ public class Dynamic extends HttpServlet {
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public Dynamic() {
+	public DynamicList() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -67,7 +67,7 @@ public class Dynamic extends HttpServlet {
 			String user_id = request.getParameter("user_id");
 			String skey = request.getParameter("skey");
 			String pro_id = request.getParameter("pro_id");
-			System.out.println("--Dynamic--" + user_id);
+			System.out.println("--DynamicList--" + user_id);
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			if (user != null) {

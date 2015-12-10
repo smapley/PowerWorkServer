@@ -15,9 +15,9 @@ public class Dynamic extends AbstractDynamic implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public Dynamic(Project project, User user, Task task, Timestamp cerDate,
+	public Dynamic(Project project, User user, Task task, Timestamp creDate,
 			Integer type, String picUrl, Set praises, Set discusses) {
-		super(project, user, task, cerDate, type, picUrl, praises, discusses);
+		super(project, user, task, creDate, type, picUrl, praises, discusses);
 	}
 
 }
