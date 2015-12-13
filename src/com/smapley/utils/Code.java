@@ -7,6 +7,7 @@ public class Code {
 	
 	public static String enCode(String data,String code){
 		String result="";
+		code+=code;
 		byte[] bytes1=data.getBytes();
 		byte[] bytes2=code.getBytes();
 		for (int i = 0; i < bytes1.length; i++) {
@@ -17,6 +18,7 @@ public class Code {
 	}
 	
 	public static String doCode(String data,String code){
+		code+=code;
 		String[] datas=data.split(",");
 		byte[] bytes1=new byte[datas.length];
 		byte[] bytes2=code.getBytes();

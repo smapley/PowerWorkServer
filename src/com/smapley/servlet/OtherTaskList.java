@@ -2,7 +2,9 @@ package com.smapley.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,28 +12,29 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
+import com.smapley.bean.Project;
+import com.smapley.bean.ProjectDAO;
+import com.smapley.bean.Task;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
+import com.smapley.mode.OtherTaskEntity;
 import com.smapley.mode.Result;
-import com.smapley.mode.UserEntity;
-import com.smapley.utils.Code;
 import com.smapley.utils.MyData;
 
 /**
  * Servlet implementation class Login
  */
-@WebServlet("/Account")
-public class Account extends HttpServlet {
+@WebServlet("/OtherTaskList")
+public class OtherTaskList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private UserDAO userDAO = new UserDAO();
+	private ProjectDAO projectDAO=new ProjectDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public Account() {
+	public OtherTaskList() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -51,7 +54,7 @@ public class Account extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings("unused")
+	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -64,32 +67,23 @@ public class Account extends HttpServlet {
 		try {
 			String user_id = request.getParameter("user_id");
 			String skey = request.getParameter("skey");
-			String truename = request.getParameter("truename");
-			String phone = request.getParameter("phone");
-			String birthday = request.getParameter("birthday");
-			System.out.println("--Account--" + truename + "--" + phone + "--"
-					+ birthday+"--"+skey);
-			UserDAO userDAO = new UserDAO();
+			String pro_id=request.getParameter("pro_id");
+			System.out.println("--OtherTaskList--" + user_id);
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
-			System.out.println("---"+user.getSkey()+"----"+skey);
 			if (user != null) {
 				// 判断skey
 				if (user.getSkey().equals(skey)) {
-					// 设置新信息
-					user.setTruename(truename);
-					user.setPhone(phone);
-					user.setBirthday(new Timestamp(Long.parseLong(birthday)));
-					Transaction transaction = HibernateSessionFactory
-							.getSession().beginTransaction();
-					userDAO.merge(user);
-					transaction.commit();
-					// 加密密码并返回数据
-					user.setPassword(Code.enCode(user.getPassword(), user
-							.getCreDate().toString()));
+					List<OtherTaskEntity> listTask = new ArrayList<OtherTaskEntity>();
+					Project project=projectDAO.findById(Integer.parseInt(pro_id));
+					for(Task task:(Set<Task>) project.getTasks()){	
+						OtherTaskEntity otherTaskEntity=new OtherTaskEntity(task);
+						listTask.add(otherTaskEntity);
+					}
+					// 返回数据
 					result.flag = MyData.SUCC;
 					result.details = "";
-					result.data = JSON.toJSONString(new UserEntity(user));
+					result.data = JSON.toJSONString(listTask);
 
 				} else {
 					result.flag = MyData.OutLogin;

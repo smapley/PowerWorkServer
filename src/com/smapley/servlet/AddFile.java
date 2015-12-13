@@ -3,8 +3,8 @@ package com.smapley.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,23 +21,17 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.hibernate.Transaction;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Dynamic;
 import com.smapley.bean.DynamicDAO;
-import com.smapley.bean.Project;
+import com.smapley.bean.FileDAO;
+import com.smapley.bean.Folder;
+import com.smapley.bean.FolderDAO;
 import com.smapley.bean.ProjectDAO;
-import com.smapley.bean.TasUse;
-import com.smapley.bean.TasUseDAO;
-import com.smapley.bean.TasUseId;
-import com.smapley.bean.Task;
-import com.smapley.bean.TaskDAO;
-import com.smapley.bean.TaskDetails;
-import com.smapley.bean.TaskDetailsDAO;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
+import com.smapley.mode.FileEntity;
 import com.smapley.mode.Result;
-import com.smapley.mode.TasUseEntity;
 import com.smapley.utils.MyData;
 
 /**
@@ -53,15 +47,14 @@ import com.smapley.utils.MyData;
  * 
  */
 @SuppressWarnings("serial")
-@WebServlet("/AddTask")
-public class AddTask extends HttpServlet {
+@WebServlet("/AddFile")
+public class AddFile extends HttpServlet {
 
 	private UserDAO userDAO = new UserDAO();
-	private TaskDAO taskDAO = new TaskDAO();
-	private ProjectDAO projectDAO = new ProjectDAO();
-	private TaskDetailsDAO taskDetailsDAO = new TaskDetailsDAO();
-	private TasUseDAO tasUseDAO=new TasUseDAO();
-	private DynamicDAO dynamicDao=new DynamicDAO();
+	private FileDAO fileDAO = new FileDAO();
+	private FolderDAO folderDAO = new FolderDAO();
+	private DynamicDAO dynamicDAO=new DynamicDAO();
+	private ProjectDAO projectDAO=new ProjectDAO();
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -74,15 +67,15 @@ public class AddTask extends HttpServlet {
 		Result result = new Result();
 		User user = null;
 
-		System.out.println("---AddTask---");
+		System.out.println("---AddFile---");
 
 		// 获得磁盘文件条目工厂
 		DiskFileItemFactory factory = new DiskFileItemFactory();
 		// 获取文件需要上传到的路径
 		@SuppressWarnings("deprecation")
-		String picPath = request.getRealPath("/upload/note/pic");
+		String picPath = request.getRealPath("/upload/file/pic");
 		@SuppressWarnings("deprecation")
-		String voicePath = request.getRealPath("/upload/note/voice");
+		String voicePath = request.getRealPath("/upload/file/voice");
 		// 如果没以下两行设置的话，上传大的 文件 会占用 很多内存，
 		// 设置暂时存放的 存储室 , 这个存储室，可以和 最终存储文件 的目录不同
 		/**
@@ -115,68 +108,23 @@ public class AddTask extends HttpServlet {
 					.getString()));
 			if (user != null) {
 				if (user.getSkey().equals(map.get("skey").getString("utf-8"))) {
+					int pro_id=Integer.parseInt(map.get("pro_id").getString("utf-8"));
+					List<FileEntity> listFile=new ArrayList<FileEntity>();
 					Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
-					// 添加task
-					Task task = new Task();
-					task.setName(map.get("name").getString("utf-8"));
-					Project project = projectDAO.findById(Integer.parseInt(map
-							.get("pro_id").getString("utf-8")));
-					task.setProject(project);
-					task.setEndDate(new Timestamp(Long.parseLong(map.get(
-							"endtime").getString("utf-8"))));
-					task.setCreDate(new Timestamp(System.currentTimeMillis()));
-					taskDAO.save(task);
-					System.out.println(map.get("tasuse")
-							.getString("utf-8"));
-					List<TasUseEntity> listTasUse = JSON.parseObject(map.get("tasuse")
-							.getString("utf-8"),
-							new TypeReference<List<TasUseEntity>>() {
-							});
-					for (int i = 0; i < listTasUse.size(); i++) {
-						TasUse tasUse = new TasUse();
-						TasUseId tasUseId = new TasUseId();
-						tasUseId.setTask(task);
-						User user1 = userDAO.findById(listTasUse.get(i).getUse_id());
-						tasUseId.setUser(user1);
-						tasUseId.setRank(listTasUse.get(i).getRank());
-						tasUse.setId(tasUseId);
-						tasUseDAO.save(tasUse);
-					}
 					for (int i = 0; i < Integer.parseInt(map.get("size")
 							.getString("utf-8")); i++) {
-						TaskDetails taskDetails = new TaskDetails();
-						taskDetails.setTask(task);
+						com.smapley.bean.File file = new com.smapley.bean.File();
+						Folder folder = folderDAO.findById(Integer.parseInt(map
+								.get("fol_id").getString("utf-8")));
+						file.setFolder(folder);
+						file.setUser(user);
+						file.setCreDate(new Timestamp(System
+								.currentTimeMillis()));
 						int type = Integer.parseInt(map.get("type" + i)
 								.getString("utf-8"));
-						taskDetails.setType(type);
+						file.setType(type);
 						switch (type) {
-						case 5:
-							taskDetails.setText(map.get("text" + i).getString(
-									"utf-8"));
-							break;
-						case 4:
-							FileItem item = map.get("file" + i);
-							/**
-							 * 以下三步，主要获取 上传文件的名字
-							 */
-							// 获取路径名
-							String value = item.getName();
-							// 索引到最后一个反斜杠
-							int start = value.lastIndexOf("\\");
-							// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
-							String filename = value.substring(start + 1);
-							filename = user.getUseId() + "_"
-									+ System.currentTimeMillis() + "."
-									+ filename.split("\\.")[1];
-							// 真正写到磁盘上
-							// 它抛出的异常 用exception 捕捉
-							item.write(new File(voiceFile, filename));// 第三方提供的
-							taskDetails.setPath("voice/" + filename);
-							taskDetails.setLength(new Time(Long.parseLong(map
-									.get("length" + i).getString())));
-							break;
-
-						case 3:
+						case 1:
 							FileItem item1 = map.get("file" + i);
 							/**
 							 * 以下三步，主要获取 上传文件的名字
@@ -187,27 +135,54 @@ public class AddTask extends HttpServlet {
 							int start1 = value1.lastIndexOf("\\");
 							// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
 							String filename1 = value1.substring(start1 + 1);
-							filename1 = user.getUseId() + "_"
+							String[] filenames1=filename1.split("\\.");
+							file.setName(filename1);
+							filename1 = folder.getFolId() + "_"
 									+ System.currentTimeMillis() + "."
-									+ filename1.split("\\.")[1];
+									+ filenames1[filenames1.length-1];
 							// 真正写到磁盘上
 							// 它抛出的异常 用exception 捕捉
-							item1.write(new File(picPath, filename1));// 第三方提供的
-							taskDetails.setPath("pic/" + filename1);
+							item1.write(new File(picPath, filename1));// 第三方提供的							
+							file.setUrl("pic/" + filename1);
+							System.out.println("=================");
+							break;
+						case 2:
+							FileItem item = map.get("file" + i);
+							/**
+							 * 以下三步，主要获取 上传文件的名字
+							 */
+							// 获取路径名
+							String value = item.getName();
+							// 索引到最后一个反斜杠
+							int start = value.lastIndexOf("\\");
+							// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
+							String filename = value.substring(start + 1);
+							String[] filenames=filename.split("\\.");
+							file.setName(filename);
+							filename = folder.getFolId()  + "_"
+									+ System.currentTimeMillis() + "."
+									+ filenames[filenames.length-1];
+							// 真正写到磁盘上
+							// 它抛出的异常 用exception 捕捉
+							item.write(new File(voiceFile, filename));// 第三方提供的
+							file.setUrl("voice/" + filename);							
 							break;
 						}
-						taskDetailsDAO.save(taskDetails);
+						fileDAO.save(file);
+						Dynamic dynamic=new Dynamic();
+						dynamic.setProject(projectDAO.findById(pro_id));
+						dynamic.setUser(user);
+						dynamic.setFile(file);
+						dynamic.setType(2);
+						dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
+						dynamicDAO.save(dynamic);
+						listFile.add(new FileEntity(file));
 					}
-					Dynamic dynamic=new Dynamic();
-					dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
-					dynamic.setUser(user);
-					dynamic.setProject(project);
-					dynamic.setTask(task);
-					dynamic.setType(1);
-					dynamicDao.save(dynamic);
+					
 					transaction.commit();
 					result.flag = MyData.SUCC;
 					result.details = "";
+					result.data=JSON.toJSONString(listFile);
 				} else {
 					result.flag = MyData.OutLogin;
 					result.details = MyData.ERR_OutLogin;

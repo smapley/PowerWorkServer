@@ -1,6 +1,7 @@
 package com.smapley.mode;
 
 import com.smapley.bean.User;
+import com.smapley.utils.Code;
 
 public class UserEntity {
 	private int useId;
@@ -17,7 +18,7 @@ public class UserEntity {
     public UserEntity(User user){
         setUseId(user.getUseId());
         setUsername(user.getUsername());
-        setPassword(user.getPassword());
+        setPassword(Code.enCode(user.getPassword(), user.getCreDate().toString()));
         setNickname(user.getNickname());
         setTruename(user.getTruename());
         setPicUrl(user.getPicUrl());

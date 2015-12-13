@@ -1,9 +1,13 @@
 package com.smapley.mode;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import com.smapley.bean.TasUse;
 import com.smapley.bean.Task;
 
-public class TaskEntity {
+public class OtherTaskEntity {
 	private int tas_id;
 	private int pro_id;
 	private String name;
@@ -12,15 +16,15 @@ public class TaskEntity {
 	private int progress;
 	private int priority;
 	private long cre_date;
-	
-	private TasUseEntity tasUseEntity;
 
-	public TaskEntity() {
+	private List<TasUseEntity> listTasUse;
+
+	public OtherTaskEntity() {
 
 	}
 
-	public TaskEntity(TasUse tasUse) {		
-		Task task=tasUse.getId().getTask();
+	@SuppressWarnings("unchecked")
+	public OtherTaskEntity(Task task) {		
 		tas_id = task.getTasId();
 		pro_id = task.getProject().getProId();
 		name = task.getName();
@@ -34,7 +38,10 @@ public class TaskEntity {
 			priority = task.getPriority();
 		if (task.getCreDate() != null)
 			cre_date = task.getCreDate().getTime();		
-		tasUseEntity=new TasUseEntity(tasUse);
+		listTasUse=new ArrayList<TasUseEntity>();
+		for(TasUse tasuse:(Set<TasUse>)task.getTasUses()){
+			listTasUse.add(new TasUseEntity(tasuse));
+		}
 
 	}
 
@@ -102,12 +109,14 @@ public class TaskEntity {
 		this.cre_date = cre_date;
 	}
 
-	public TasUseEntity getTasUseEntity() {
-		return tasUseEntity;
+	public List<TasUseEntity> getListTasUse() {
+		return listTasUse;
 	}
 
-	public void setTasUseEntity(TasUseEntity tasUseEntity) {
-		this.tasUseEntity = tasUseEntity;
+	public void setListTasUse(List<TasUseEntity> listTasUse) {
+		this.listTasUse = listTasUse;
 	}
+
 	
+
 }

@@ -26,7 +26,6 @@ import com.smapley.utils.MyData;
 @WebServlet("/ProjectList")
 public class ProjectList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private UserDAO userDAO = new UserDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -51,7 +50,7 @@ public class ProjectList extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "unused" })
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -65,8 +64,10 @@ public class ProjectList extends HttpServlet {
 			String user_id = request.getParameter("user_id");
 			String skey = request.getParameter("skey");
 			System.out.println("--ProjectList--" + user_id);
+			UserDAO userDAO = new UserDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
+			System.out.println("---"+user.getSkey()+"----"+skey);
 			if (user != null) {
 				// 判断skey
 				if (user.getSkey().equals(skey)) {

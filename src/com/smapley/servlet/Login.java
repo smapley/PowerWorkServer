@@ -18,7 +18,6 @@ import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.mode.UserEntity;
-import com.smapley.utils.Code;
 import com.smapley.utils.MyData;
 
 /**
@@ -27,7 +26,6 @@ import com.smapley.utils.MyData;
 @WebServlet("/Login")
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private UserDAO userDAO =new UserDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -65,6 +63,7 @@ public class Login extends HttpServlet {
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
 			System.out.println("--登陆--" + username + "--" + password);
+			UserDAO userDAO =new UserDAO();
 			// 根据用户名查询
 			User user = (User) userDAO.findByUsername(username).get(0);
 			// 判断密码
@@ -74,10 +73,8 @@ public class Login extends HttpServlet {
 				user.setSkey(skey);
 				Transaction transaction = HibernateSessionFactory.getSession()
 						.beginTransaction();
-				userDAO.merge(user);
+				userDAO.merge(user);				
 				transaction.commit();
-				// 加密密码并返回数据
-				user.setPassword(Code.enCode(user.getPassword(), user.getCreDate().toString()));
 				result.flag = MyData.SUCC;
 				result.details = "";
 				result.data = JSON.toJSONString(new UserEntity(user));

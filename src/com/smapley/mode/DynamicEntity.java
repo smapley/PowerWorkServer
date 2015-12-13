@@ -42,6 +42,14 @@ public class DynamicEntity {
 		switch (type) {
 		case 0:
 			detai = dynamic.getProject().getName();
+			dPic_url=dynamic.getProject().getPicUrl();
+			break;
+		case 1:
+			detai=dynamic.getTask().getName();
+			break;
+		case 2:
+			detai=dynamic.getFile().getName();
+			dPic_url=dynamic.getFile().getUrl();
 			break;
 
 		default:

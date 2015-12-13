@@ -1,6 +1,8 @@
 package com.smapley.bean;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * AbstractFile entity provides the base persistence definition of the File
@@ -18,6 +20,7 @@ public abstract class AbstractFile implements java.io.Serializable {
 	private Integer type;
 	private String url;
 	private Timestamp creDate;
+	private Set dynamics = new HashSet(0);
 
 	// Constructors
 
@@ -26,9 +29,7 @@ public abstract class AbstractFile implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public AbstractFile(Integer filId, User user, String name, Integer type,
-			String url) {
-		this.filId = filId;
+	public AbstractFile(User user, String name, Integer type, String url) {
 		this.user = user;
 		this.name = name;
 		this.type = type;
@@ -36,15 +37,15 @@ public abstract class AbstractFile implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public AbstractFile(Integer filId, Folder folder, User user, String name,
-			Integer type, String url, Timestamp creDate) {
-		this.filId = filId;
+	public AbstractFile(Folder folder, User user, String name, Integer type,
+			String url, Timestamp creDate, Set dynamics) {
 		this.folder = folder;
 		this.user = user;
 		this.name = name;
 		this.type = type;
 		this.url = url;
 		this.creDate = creDate;
+		this.dynamics = dynamics;
 	}
 
 	// Property accessors
@@ -103,6 +104,14 @@ public abstract class AbstractFile implements java.io.Serializable {
 
 	public void setCreDate(Timestamp creDate) {
 		this.creDate = creDate;
+	}
+
+	public Set getDynamics() {
+		return this.dynamics;
+	}
+
+	public void setDynamics(Set dynamics) {
+		this.dynamics = dynamics;
 	}
 
 }

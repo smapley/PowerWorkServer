@@ -17,6 +17,8 @@ import com.alibaba.fastjson.JSON;
 import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Dynamic;
 import com.smapley.bean.DynamicDAO;
+import com.smapley.bean.Folder;
+import com.smapley.bean.FolderDAO;
 import com.smapley.bean.ProUse;
 import com.smapley.bean.ProUseDAO;
 import com.smapley.bean.ProUseId;
@@ -38,6 +40,7 @@ public class AddProject extends HttpServlet {
 	private ProjectDAO projectDAO = new ProjectDAO();
 	private ProUseDAO proUseDAO = new ProUseDAO();
 	private DynamicDAO dynamicDAO=new DynamicDAO();
+	private FolderDAO folderDAO=new FolderDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -109,8 +112,24 @@ public class AddProject extends HttpServlet {
 						dynamic.setUser(user);
 						dynamic.setProject(project);
 						dynamic.setType(0);
+						dynamic.setPicUrl(project.getPicUrl());
 						dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
 						dynamicDAO.save(dynamic);
+						Folder folder=new Folder();
+						folder.setProject(project);
+						folder.setUser(user);
+						folder.setName(name);
+						folderDAO.save(folder);
+						Folder folder1=new Folder();
+						folder1.setFolder(folder);
+						folder1.setUser(user);
+						folder1.setName("图片");
+						folderDAO.save(folder1);
+						Folder folder2=new Folder();
+						folder2.setFolder(folder);
+						folder2.setUser(user);
+						folder2.setName("声音");
+						folderDAO.save(folder2);
 						treTransaction.commit();
 						project = (Project) projectDAO.findByExample(project)
 								.get(0);

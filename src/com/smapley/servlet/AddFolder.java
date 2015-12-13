@@ -2,7 +2,6 @@ package com.smapley.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Timestamp;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,28 +9,28 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
+import com.smapley.bean.Folder;
+import com.smapley.bean.FolderDAO;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
+import com.smapley.mode.FolderEntity;
 import com.smapley.mode.Result;
-import com.smapley.mode.UserEntity;
-import com.smapley.utils.Code;
 import com.smapley.utils.MyData;
 
 /**
  * Servlet implementation class Login
  */
-@WebServlet("/Account")
-public class Account extends HttpServlet {
+@WebServlet("/AddFolder")
+public class AddFolder extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private UserDAO userDAO = new UserDAO();
+	private FolderDAO folderDAO = new FolderDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public Account() {
+	public AddFolder() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -51,7 +50,6 @@ public class Account extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings("unused")
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -64,32 +62,24 @@ public class Account extends HttpServlet {
 		try {
 			String user_id = request.getParameter("user_id");
 			String skey = request.getParameter("skey");
-			String truename = request.getParameter("truename");
-			String phone = request.getParameter("phone");
-			String birthday = request.getParameter("birthday");
-			System.out.println("--Account--" + truename + "--" + phone + "--"
-					+ birthday+"--"+skey);
-			UserDAO userDAO = new UserDAO();
+			String name = request.getParameter("name");
+			String fol_id = request.getParameter("fol_id");
+			System.out.println("--AddFolder--" + user_id + "--" + name);
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
-			System.out.println("---"+user.getSkey()+"----"+skey);
 			if (user != null) {
 				// 判断skey
 				if (user.getSkey().equals(skey)) {
-					// 设置新信息
-					user.setTruename(truename);
-					user.setPhone(phone);
-					user.setBirthday(new Timestamp(Long.parseLong(birthday)));
-					Transaction transaction = HibernateSessionFactory
-							.getSession().beginTransaction();
-					userDAO.merge(user);
-					transaction.commit();
-					// 加密密码并返回数据
-					user.setPassword(Code.enCode(user.getPassword(), user
-							.getCreDate().toString()));
+					Folder folder0=folderDAO.findById(Integer.decode(fol_id));
+					Folder folder=new Folder();
+					folder.setName(name);
+					folder.setFolder(folder0);
+					folder.setUser(user);
+					folderDAO.save(folder);
+					// 返回数据
 					result.flag = MyData.SUCC;
 					result.details = "";
-					result.data = JSON.toJSONString(new UserEntity(user));
+					result.data = JSON.toJSONString(new FolderEntity(folder));
 
 				} else {
 					result.flag = MyData.OutLogin;

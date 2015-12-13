@@ -13,28 +13,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
+import com.smapley.bean.Folder;
 import com.smapley.bean.Project;
 import com.smapley.bean.ProjectDAO;
-import com.smapley.bean.Task;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
-import com.smapley.mode.PTaskEntity;
+import com.smapley.mode.FolderEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 
 /**
  * Servlet implementation class Login
  */
-@WebServlet("/PTask")
-public class PTask extends HttpServlet {
+@WebServlet("/FolderList")
+public class FolderList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private UserDAO userDAO = new UserDAO();
-	private ProjectDAO projectDAO = new ProjectDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public PTask() {
+	public FolderList() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -54,7 +52,7 @@ public class PTask extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "unused" })
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -68,25 +66,26 @@ public class PTask extends HttpServlet {
 			String user_id = request.getParameter("user_id");
 			String skey = request.getParameter("skey");
 			String pro_id = request.getParameter("pro_id");
-			System.out.println("--PTask--" + user_id + "--" + pro_id);
+			System.out.println("--FolderList--" + user_id);
+			UserDAO userDAO = new UserDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
+			System.out.println("---" + user.getSkey() + "----" + skey);
 			if (user != null) {
 				// 判断skey
 				if (user.getSkey().equals(skey)) {
-					List<PTaskEntity> listTask = new ArrayList<PTaskEntity>();
+					ProjectDAO projectDAO = new ProjectDAO();
 					Project project = projectDAO.findById(Integer
 							.parseInt(pro_id));
-					if (project != null) {
-						for (Task task : (Set<Task>) project.getTasks()) {
-							listTask.add(new PTaskEntity(task));
-						}
+					List<FolderEntity> listFolder = new ArrayList<FolderEntity>();
+					for (Folder folder : (Set<Folder>) project.getFolders()) {
+						listFolder.add(new FolderEntity(folder));
+						listFolder.addAll(getFolder(folder));
 					}
-
 					// 返回数据
 					result.flag = MyData.SUCC;
 					result.details = "";
-					result.data = JSON.toJSONString(listTask);
+					result.data = JSON.toJSONString(listFolder);
 
 				} else {
 					result.flag = MyData.OutLogin;
@@ -106,5 +105,17 @@ public class PTask extends HttpServlet {
 		out.flush();
 		out.close();
 
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<FolderEntity> getFolder(Folder folder) {
+		List<FolderEntity> listFolder = new ArrayList<FolderEntity>();
+		Set<Folder> setFolder = (Set<Folder>) folder.getFolders();
+		if (setFolder != null && !setFolder.isEmpty())
+			for (Folder folder1 : setFolder) {
+				listFolder.add(new FolderEntity(folder1));
+				listFolder.addAll(getFolder(folder1));
+			}
+		return listFolder;
 	}
 }

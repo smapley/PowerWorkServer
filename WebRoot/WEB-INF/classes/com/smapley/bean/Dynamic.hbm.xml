@@ -19,6 +19,9 @@
         <many-to-one name="task" class="com.smapley.bean.Task" fetch="select">
             <column name="tas_id" />
         </many-to-one>
+        <many-to-one name="file" class="com.smapley.bean.File" fetch="select">
+            <column name="fil_id" />
+        </many-to-one>
         <property name="creDate" type="java.sql.Timestamp">
             <column name="cre_date" length="19" />
         </property>

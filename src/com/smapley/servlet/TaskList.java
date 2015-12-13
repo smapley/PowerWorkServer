@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.TasUse;
-import com.smapley.bean.Task;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
 import com.smapley.mode.Result;
@@ -27,7 +26,6 @@ import com.smapley.utils.MyData;
 @WebServlet("/TaskList")
 public class TaskList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private UserDAO userDAO = new UserDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -66,6 +64,7 @@ public class TaskList extends HttpServlet {
 			String user_id = request.getParameter("user_id");
 			String skey = request.getParameter("skey");
 			System.out.println("--TaskList--" + user_id);
+			UserDAO userDAO = new UserDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			if (user != null) {
