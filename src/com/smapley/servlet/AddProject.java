@@ -36,11 +36,6 @@ import com.smapley.utils.MyData;
 @WebServlet("/AddProject")
 public class AddProject extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private UserDAO userDAO = new UserDAO();
-	private ProjectDAO projectDAO = new ProjectDAO();
-	private ProUseDAO proUseDAO = new ProUseDAO();
-	private DynamicDAO dynamicDAO=new DynamicDAO();
-	private FolderDAO folderDAO=new FolderDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -80,6 +75,14 @@ public class AddProject extends HttpServlet {
 			String skey = request.getParameter("skey");
 			String name = request.getParameter("name");
 			System.out.println("--AddProject--" + user_id + "--" + name);
+
+			Transaction transaction = HibernateSessionFactory.getSession()
+					.beginTransaction();
+			UserDAO userDAO = new UserDAO();
+			ProjectDAO projectDAO = new ProjectDAO();
+			ProUseDAO proUseDAO = new ProUseDAO();
+			DynamicDAO dynamicDAO = new DynamicDAO();
+			FolderDAO folderDAO = new FolderDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			if (user != null) {
@@ -108,24 +111,25 @@ public class AddProject extends HttpServlet {
 						prouse.setId(proUseId);
 						prouse.setRank(0);
 						proUseDAO.save(prouse);
-						Dynamic dynamic=new Dynamic();
+						Dynamic dynamic = new Dynamic();
 						dynamic.setUser(user);
 						dynamic.setProject(project);
 						dynamic.setType(0);
 						dynamic.setPicUrl(project.getPicUrl());
-						dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
+						dynamic.setCreDate(new Timestamp(System
+								.currentTimeMillis()));
 						dynamicDAO.save(dynamic);
-						Folder folder=new Folder();
+						Folder folder = new Folder();
 						folder.setProject(project);
 						folder.setUser(user);
 						folder.setName(name);
 						folderDAO.save(folder);
-						Folder folder1=new Folder();
+						Folder folder1 = new Folder();
 						folder1.setFolder(folder);
 						folder1.setUser(user);
 						folder1.setName("图片");
 						folderDAO.save(folder1);
-						Folder folder2=new Folder();
+						Folder folder2 = new Folder();
 						folder2.setFolder(folder);
 						folder2.setUser(user);
 						folder2.setName("声音");
@@ -148,7 +152,7 @@ public class AddProject extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-
+			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

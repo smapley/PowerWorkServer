@@ -12,7 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Transaction;
+
 import com.alibaba.fastjson.JSON;
+import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Note;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
@@ -26,7 +29,6 @@ import com.smapley.utils.MyData;
 @WebServlet("/NoteList")
 public class NoteList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private UserDAO userDAO = new UserDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -65,6 +67,9 @@ public class NoteList extends HttpServlet {
 			String user_id = request.getParameter("user_id");
 			String skey = request.getParameter("skey");
 			System.out.println("--NoteList--" + user_id);
+			
+			Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
+			UserDAO userDAO = new UserDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			if (user != null) {
@@ -87,7 +92,7 @@ public class NoteList extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-
+			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

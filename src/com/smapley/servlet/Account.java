@@ -18,7 +18,6 @@ import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.mode.UserEntity;
-import com.smapley.utils.Code;
 import com.smapley.utils.MyData;
 
 /**
@@ -69,6 +68,9 @@ public class Account extends HttpServlet {
 			String birthday = request.getParameter("birthday");
 			System.out.println("--Account--" + truename + "--" + phone + "--"
 					+ birthday+"--"+skey);
+			
+			Transaction transaction = HibernateSessionFactory
+					.getSession().beginTransaction();
 			UserDAO userDAO = new UserDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
@@ -79,14 +81,8 @@ public class Account extends HttpServlet {
 					// 设置新信息
 					user.setTruename(truename);
 					user.setPhone(phone);
-					user.setBirthday(new Timestamp(Long.parseLong(birthday)));
-					Transaction transaction = HibernateSessionFactory
-							.getSession().beginTransaction();
-					userDAO.merge(user);
-					transaction.commit();
-					// 加密密码并返回数据
-					user.setPassword(Code.enCode(user.getPassword(), user
-							.getCreDate().toString()));
+					user.setBirthday(new Timestamp(Long.parseLong(birthday)));					
+					userDAO.attachDirty(user);	
 					result.flag = MyData.SUCC;
 					result.details = "";
 					result.data = JSON.toJSONString(new UserEntity(user));
@@ -98,7 +94,7 @@ public class Account extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-
+			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

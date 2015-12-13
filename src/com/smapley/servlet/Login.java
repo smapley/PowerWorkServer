@@ -63,6 +63,9 @@ public class Login extends HttpServlet {
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
 			System.out.println("--登陆--" + username + "--" + password);
+			
+			Transaction transaction = HibernateSessionFactory.getSession()
+					.beginTransaction();
 			UserDAO userDAO =new UserDAO();
 			// 根据用户名查询
 			User user = (User) userDAO.findByUsername(username).get(0);
@@ -70,11 +73,8 @@ public class Login extends HttpServlet {
 			if (user.getPassword().equals(password)) {
 				String skey = getRandomString(20);
 				// 设置skey并保存
-				user.setSkey(skey);
-				Transaction transaction = HibernateSessionFactory.getSession()
-						.beginTransaction();
-				userDAO.merge(user);				
-				transaction.commit();
+				user.setSkey(skey);				
+				userDAO.attachDirty(user);	
 				result.flag = MyData.SUCC;
 				result.details = "";
 				result.data = JSON.toJSONString(new UserEntity(user));
@@ -82,7 +82,8 @@ public class Login extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_PASSWORD;
 			}
-
+			transaction.commit();
+			HibernateSessionFactory.getSession().evict(user);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

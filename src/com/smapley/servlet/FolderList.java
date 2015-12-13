@@ -12,7 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Transaction;
+
 import com.alibaba.fastjson.JSON;
+import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Folder;
 import com.smapley.bean.Project;
 import com.smapley.bean.ProjectDAO;
@@ -67,6 +70,9 @@ public class FolderList extends HttpServlet {
 			String skey = request.getParameter("skey");
 			String pro_id = request.getParameter("pro_id");
 			System.out.println("--FolderList--" + user_id);
+			
+			Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
+			ProjectDAO projectDAO = new ProjectDAO();
 			UserDAO userDAO = new UserDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
@@ -74,7 +80,6 @@ public class FolderList extends HttpServlet {
 			if (user != null) {
 				// 判断skey
 				if (user.getSkey().equals(skey)) {
-					ProjectDAO projectDAO = new ProjectDAO();
 					Project project = projectDAO.findById(Integer
 							.parseInt(pro_id));
 					List<FolderEntity> listFolder = new ArrayList<FolderEntity>();
@@ -94,7 +99,7 @@ public class FolderList extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-
+			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

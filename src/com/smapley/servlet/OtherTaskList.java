@@ -12,7 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Transaction;
+
 import com.alibaba.fastjson.JSON;
+import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Project;
 import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.Task;
@@ -28,8 +31,6 @@ import com.smapley.utils.MyData;
 @WebServlet("/OtherTaskList")
 public class OtherTaskList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private UserDAO userDAO = new UserDAO();
-	private ProjectDAO projectDAO=new ProjectDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -67,17 +68,24 @@ public class OtherTaskList extends HttpServlet {
 		try {
 			String user_id = request.getParameter("user_id");
 			String skey = request.getParameter("skey");
-			String pro_id=request.getParameter("pro_id");
+			String pro_id = request.getParameter("pro_id");
 			System.out.println("--OtherTaskList--" + user_id);
+
+			Transaction transaction = HibernateSessionFactory.getSession()
+					.beginTransaction();
+			UserDAO userDAO = new UserDAO();
+			ProjectDAO projectDAO = new ProjectDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			if (user != null) {
 				// 判断skey
 				if (user.getSkey().equals(skey)) {
 					List<OtherTaskEntity> listTask = new ArrayList<OtherTaskEntity>();
-					Project project=projectDAO.findById(Integer.parseInt(pro_id));
-					for(Task task:(Set<Task>) project.getTasks()){	
-						OtherTaskEntity otherTaskEntity=new OtherTaskEntity(task);
+					Project project = projectDAO.findById(Integer
+							.parseInt(pro_id));
+					for (Task task : (Set<Task>) project.getTasks()) {
+						OtherTaskEntity otherTaskEntity = new OtherTaskEntity(
+								task);
 						listTask.add(otherTaskEntity);
 					}
 					// 返回数据
@@ -92,7 +100,7 @@ public class OtherTaskList extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-
+			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

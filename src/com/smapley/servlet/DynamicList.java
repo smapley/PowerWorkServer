@@ -12,7 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Transaction;
+
 import com.alibaba.fastjson.JSON;
+import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Project;
 import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
@@ -27,8 +30,6 @@ import com.smapley.utils.MyData;
 @WebServlet("/DynamicList")
 public class DynamicList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private UserDAO userDAO = new UserDAO();
-	private ProjectDAO projectDAO = new ProjectDAO();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -68,7 +69,10 @@ public class DynamicList extends HttpServlet {
 			String skey = request.getParameter("skey");
 			String pro_id = request.getParameter("pro_id");
 			System.out.println("--DynamicList--" + user_id);
+			Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
 			// 根据id查询
+			UserDAO userDAO = new UserDAO();
+			ProjectDAO projectDAO = new ProjectDAO();
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			if (user != null) {
 				// 判断skey
@@ -91,6 +95,7 @@ public class DynamicList extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
+			transaction.commit();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

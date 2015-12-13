@@ -23,7 +23,7 @@
 		<property name="connection.driver_class">
 			com.mysql.jdbc.Driver
 		</property>
-		<property name="hibernate.connection.autocommit">true</property>
+		<!-- <property name="hibernate.connection.autocommit">true</property> -->
 		<!-- create表示每次启动都把之前数据库表删除再重新创建 uodate表示映射文件的属性要数据库一样，如果不一样会自动帮你修改 -->
 		<property name="hibernate.hbm2ddl.auto">update</property>
 		<!-- 是否显示查询语句 -->

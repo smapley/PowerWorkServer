@@ -12,7 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Transaction;
+
 import com.alibaba.fastjson.JSON;
+import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.File;
 import com.smapley.bean.Folder;
 import com.smapley.bean.Project;
@@ -20,7 +23,6 @@ import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
 import com.smapley.mode.FileEntity;
-import com.smapley.mode.FolderEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 
@@ -69,14 +71,16 @@ public class FileList extends HttpServlet {
 			String skey = request.getParameter("skey");
 			String pro_id = request.getParameter("pro_id");
 			System.out.println("--FileList--" + user_id);
+			
+			Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
 			UserDAO userDAO = new UserDAO();
+			ProjectDAO projectDAO = new ProjectDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			System.out.println("---" + user.getSkey() + "----" + skey);
 			if (user != null) {
 				// 判断skey
-				if (user.getSkey().equals(skey)) {
-					ProjectDAO projectDAO = new ProjectDAO();
+				if (user.getSkey().equals(skey)) {					
 					Project project = projectDAO.findById(Integer
 							.parseInt(pro_id));
 					List<FileEntity> listFile = new ArrayList<FileEntity>();
@@ -95,7 +99,7 @@ public class FileList extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-
+			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,5 +1,5 @@
 #MyEclipse Hibernate Properties
-#Sun Dec 13 00:34:15 CST 2015
+#Sun Dec 13 23:55:41 CST 2015
 genBasicCompId=false
 sessionFactoryName=com.smapley.HibernateSessionFactory
 profile=
@@ -18,4 +18,4 @@ genAnnotations=false
 reSettingsFile=
 configFile=/PowerWorkService/src/hibernate.cfg.xml
 createConfigFile=true
-baseDaoClass=BaseHibernateDAO
+baseDaoClass=com.smapley.bean.BaseHibernateDAO

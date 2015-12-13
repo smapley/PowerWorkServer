@@ -19,7 +19,6 @@ import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.mode.UserEntity;
-import com.smapley.utils.Code;
 import com.smapley.utils.MyData;
 
 @WebServlet("/Register")
@@ -29,7 +28,7 @@ public class Register extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private UserDAO userDAO = new UserDAO();
+	
 
 	public Register() {
 		super();
@@ -60,6 +59,9 @@ public class Register extends HttpServlet {
 			String password = request.getParameter("password");
 			String phone = request.getParameter("phone");
 			System.out.println("--注册--" + username + "--" + password);
+			
+			Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
+			UserDAO userDAO=new UserDAO();
 			// 查询是否存在相同用户名
 			@SuppressWarnings("unchecked")
 			List<User> list = userDAO.findByUsername(username);
@@ -72,13 +74,8 @@ public class Register extends HttpServlet {
 				user.setPhone(phone);
 				user.setCreDate(new Timestamp(System.currentTimeMillis()));
 				user.setBirthday(new Timestamp(System.currentTimeMillis()));
-				Transaction transaction = HibernateSessionFactory.getSession()
-						.beginTransaction();
-				user=userDAO.merge(user);
-				transaction.commit();				
+				user=userDAO.merge(user);			
 				System.out.println(user.getCreDate().toString());
-				user.setPassword(Code.enCode(user.getPassword(), user
-						.getCreDate().toString()));
 				result.data = JSON.toJSONString(new UserEntity(user));
 				result.details = "";
 				result.flag = MyData.SUCC;
@@ -86,7 +83,7 @@ public class Register extends HttpServlet {
 				// 存在相同用户名
 				result.details = MyData.ERR_USERNAME;
 			}
-
+			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

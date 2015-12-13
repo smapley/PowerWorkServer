@@ -18,8 +18,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.hibernate.Transaction;
 
 import com.alibaba.fastjson.JSON;
+import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Note;
 import com.smapley.bean.NoteDAO;
 import com.smapley.bean.NoteDetails;
@@ -44,10 +46,6 @@ import com.smapley.utils.MyData;
 @SuppressWarnings("serial")
 @WebServlet("/AddNote")
 public class AddNote extends HttpServlet {
-
-	private UserDAO userDAO = new UserDAO();
-	private NoteDAO noteDAO = new NoteDAO();
-	private NoteDetailsDAO noteDetailsDAO = new NoteDetailsDAO();
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -97,6 +95,11 @@ public class AddNote extends HttpServlet {
 				// 获取表单的属性名字
 				map.put(item.getFieldName(), item);
 			}
+			Transaction transaction = HibernateSessionFactory.getSession()
+					.beginTransaction();
+			UserDAO userDAO = new UserDAO();
+			NoteDAO noteDAO = new NoteDAO();
+			NoteDetailsDAO noteDetailsDAO = new NoteDetailsDAO();
 			user = userDAO.findById(Integer.parseInt(map.get("user_id")
 					.getString()));
 			if (user != null) {
@@ -175,6 +178,7 @@ public class AddNote extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
+			transaction.commit();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

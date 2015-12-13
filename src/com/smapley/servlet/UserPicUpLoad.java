@@ -43,8 +43,6 @@ import com.smapley.utils.MyData;
 @WebServlet("/UserPicUpLoad")
 public class UserPicUpLoad extends HttpServlet {
 
-	private UserDAO userDAO=new UserDAO();
-
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -92,6 +90,9 @@ public class UserPicUpLoad extends HttpServlet {
 					map.put(item.getFieldName(), item.getString());
 				}
 			}
+			Transaction transaction = HibernateSessionFactory.getSession()
+					.beginTransaction();
+			UserDAO userDAO = new UserDAO();
 			user = userDAO.findById(Integer.parseInt(map.get("user_id")));
 			if (user != null) {
 				if (user.getSkey().equals(map.get("skey"))) {
@@ -120,10 +121,7 @@ public class UserPicUpLoad extends HttpServlet {
 							item.write(new File(path, filename));// 第三方提供的
 
 							user.setPicUrl("user_pic/" + filename);
-							Transaction transaction = HibernateSessionFactory.getSession()
-									.beginTransaction();
 							userDAO.merge(user);
-							transaction.commit();
 							// 加密密码并返回数据
 							user.setPassword(Code.enCode(user.getPassword(),
 									user.getCreDate().toString()));
@@ -141,6 +139,7 @@ public class UserPicUpLoad extends HttpServlet {
 				result.details = MyData.ERR_NoUser;
 			}
 
+			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

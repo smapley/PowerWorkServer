@@ -13,7 +13,7 @@
         <many-to-one name="user" class="com.smapley.bean.User" fetch="select">
             <column name="use_id" not-null="true" />
         </many-to-one>
-        <property name="details" type="java.lang.String">
+        <property name="details" type="java.lang.String" >
             <column name="details" not-null="true" />
         </property>
         <property name="creDate" type="java.sql.Timestamp">

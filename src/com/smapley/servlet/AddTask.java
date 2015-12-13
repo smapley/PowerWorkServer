@@ -56,13 +56,6 @@ import com.smapley.utils.MyData;
 @WebServlet("/AddTask")
 public class AddTask extends HttpServlet {
 
-	private UserDAO userDAO = new UserDAO();
-	private TaskDAO taskDAO = new TaskDAO();
-	private ProjectDAO projectDAO = new ProjectDAO();
-	private TaskDetailsDAO taskDetailsDAO = new TaskDetailsDAO();
-	private TasUseDAO tasUseDAO=new TasUseDAO();
-	private DynamicDAO dynamicDao=new DynamicDAO();
-
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -111,11 +104,19 @@ public class AddTask extends HttpServlet {
 				// 获取表单的属性名字
 				map.put(item.getFieldName(), item);
 			}
+
+			Transaction transaction = HibernateSessionFactory.getSession()
+					.beginTransaction();
+			UserDAO userDAO = new UserDAO();
+			TaskDAO taskDAO = new TaskDAO();
+			ProjectDAO projectDAO = new ProjectDAO();
+			TaskDetailsDAO taskDetailsDAO = new TaskDetailsDAO();
+			TasUseDAO tasUseDAO = new TasUseDAO();
+			DynamicDAO dynamicDao = new DynamicDAO();
 			user = userDAO.findById(Integer.parseInt(map.get("user_id")
 					.getString()));
 			if (user != null) {
 				if (user.getSkey().equals(map.get("skey").getString("utf-8"))) {
-					Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
 					// 添加task
 					Task task = new Task();
 					task.setName(map.get("name").getString("utf-8"));
@@ -126,17 +127,17 @@ public class AddTask extends HttpServlet {
 							"endtime").getString("utf-8"))));
 					task.setCreDate(new Timestamp(System.currentTimeMillis()));
 					taskDAO.save(task);
-					System.out.println(map.get("tasuse")
-							.getString("utf-8"));
-					List<TasUseEntity> listTasUse = JSON.parseObject(map.get("tasuse")
-							.getString("utf-8"),
+					System.out.println(map.get("tasuse").getString("utf-8"));
+					List<TasUseEntity> listTasUse = JSON.parseObject(
+							map.get("tasuse").getString("utf-8"),
 							new TypeReference<List<TasUseEntity>>() {
 							});
 					for (int i = 0; i < listTasUse.size(); i++) {
 						TasUse tasUse = new TasUse();
 						TasUseId tasUseId = new TasUseId();
 						tasUseId.setTask(task);
-						User user1 = userDAO.findById(listTasUse.get(i).getUse_id());
+						User user1 = userDAO.findById(listTasUse.get(i)
+								.getUse_id());
 						tasUseId.setUser(user1);
 						tasUseId.setRank(listTasUse.get(i).getRank());
 						tasUse.setId(tasUseId);
@@ -198,14 +199,14 @@ public class AddTask extends HttpServlet {
 						}
 						taskDetailsDAO.save(taskDetails);
 					}
-					Dynamic dynamic=new Dynamic();
+					Dynamic dynamic = new Dynamic();
 					dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
 					dynamic.setUser(user);
 					dynamic.setProject(project);
 					dynamic.setTask(task);
 					dynamic.setType(1);
 					dynamicDao.save(dynamic);
-					transaction.commit();
+
 					result.flag = MyData.SUCC;
 					result.details = "";
 				} else {
@@ -215,6 +216,7 @@ public class AddTask extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
+			transaction.commit();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

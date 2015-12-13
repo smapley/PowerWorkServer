@@ -145,6 +145,7 @@ public class UserDAO extends BaseHibernateDAO {
 			throw re;
 		}
 	}
+	
 
 	public void attachDirty(User instance) {
 		log.debug("attaching dirty User instance");
