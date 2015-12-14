@@ -2,21 +2,28 @@ package com.smapley.test;
 
 import static org.junit.Assert.fail;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.junit.BeforeClass;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import org.hibernate.Transaction;
-
-import com.smapley.HibernateSessionFactory;
-import com.smapley.bean.Feedbacks;
-import com.smapley.bean.FeedbacksDAO;
-import com.smapley.bean.Project;
-import com.smapley.bean.ProjectDAO;
+import com.smapley.bean.Task;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.TaskDAO;
+import com.smapley.dao.UserDAO;
 
 public class Test {
 
+	public static UserDAO userDAO;
+	public static TaskDAO taskDao;
+	
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		ApplicationContext cxt=new ClassPathXmlApplicationContext("applicationContext.xml");
+		userDAO=(UserDAO)cxt.getBean("UserDAO");
+		taskDao=TaskDAO.getFromApplicationContext(cxt);
+	}
+
+	
 	@org.junit.Test
 	public void test() {
 		fail("Not yet implemented");
@@ -24,12 +31,8 @@ public class Test {
 
 	@org.junit.Test
 	public void save(){
-		
-		ProjectDAO projectDAO=new ProjectDAO();
-		Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
-		Project project=new Project();
-		project.setName("asdfasdfa");	
-		projectDAO.save(project);
-		transaction.commit();
+		Task task=taskDao.findById(30);
+		System.out.println(task.getName());
+		System.out.println(task.getProject().getName());
 	}
 }

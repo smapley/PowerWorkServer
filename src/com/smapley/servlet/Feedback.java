@@ -10,14 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Feedbacks;
-import com.smapley.bean.FeedbacksDAO;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.FeedbacksDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 
@@ -27,6 +24,11 @@ import com.smapley.utils.MyData;
 @WebServlet("/Feedback")
 public class Feedback extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private UserDAO userDAO = UserDAO
+			.getFromApplicationContext(MyData.getCXT());
+	private FeedbacksDAO feedbacksDAO = FeedbacksDAO
+			.getFromApplicationContext(MyData.getCXT());
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -66,10 +68,6 @@ public class Feedback extends HttpServlet {
 			String details = request.getParameter("details");
 			System.out.println("--Feedback--" + user_id + "--" + details);
 
-			Transaction transaction = HibernateSessionFactory.getSession()
-					.beginTransaction();
-			UserDAO userDAO = new UserDAO();
-			FeedbacksDAO feedbacksDAO = new FeedbacksDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			if (user != null) {
@@ -92,7 +90,6 @@ public class Feedback extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

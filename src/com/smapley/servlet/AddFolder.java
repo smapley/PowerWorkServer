@@ -9,14 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Folder;
-import com.smapley.bean.FolderDAO;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.FolderDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.FolderEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
@@ -27,6 +24,11 @@ import com.smapley.utils.MyData;
 @WebServlet("/AddFolder")
 public class AddFolder extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private UserDAO userDAO = UserDAO
+			.getFromApplicationContext(MyData.getCXT());
+	private FolderDAO folderDAO = FolderDAO.getFromApplicationContext(MyData
+			.getCXT());
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -67,9 +69,6 @@ public class AddFolder extends HttpServlet {
 			String fol_id = request.getParameter("fol_id");
 			System.out.println("--AddFolder--" + user_id + "--" + name);
 
-			Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
-			UserDAO userDAO = new UserDAO();
-			FolderDAO folderDAO = new FolderDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			if (user != null) {
@@ -93,7 +92,6 @@ public class AddFolder extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

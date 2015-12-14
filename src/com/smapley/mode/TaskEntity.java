@@ -20,7 +20,7 @@ public class TaskEntity {
 	}
 
 	public TaskEntity(TasUse tasUse) {		
-		Task task=tasUse.getId().getTask();
+		Task task=tasUse.getTask();
 		tas_id = task.getTasId();
 		pro_id = task.getProject().getProId();
 		name = task.getName();

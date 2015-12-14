@@ -11,12 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.mode.UserEntity;
 import com.smapley.utils.MyData;
@@ -28,7 +25,9 @@ public class Register extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
+	private UserDAO userDAO = UserDAO
+			.getFromApplicationContext(MyData.getCXT());
 
 	public Register() {
 		super();
@@ -59,11 +58,8 @@ public class Register extends HttpServlet {
 			String password = request.getParameter("password");
 			String phone = request.getParameter("phone");
 			System.out.println("--注册--" + username + "--" + password);
-			
-			Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
-			UserDAO userDAO=new UserDAO();
+
 			// 查询是否存在相同用户名
-			@SuppressWarnings("unchecked")
 			List<User> list = userDAO.findByUsername(username);
 			if (list.isEmpty()) {
 				// 不存在相同用户名，插入新用户
@@ -74,7 +70,7 @@ public class Register extends HttpServlet {
 				user.setPhone(phone);
 				user.setCreDate(new Timestamp(System.currentTimeMillis()));
 				user.setBirthday(new Timestamp(System.currentTimeMillis()));
-				user=userDAO.merge(user);			
+				user = userDAO.merge(user);
 				System.out.println(user.getCreDate().toString());
 				result.data = JSON.toJSONString(new UserEntity(user));
 				result.details = "";
@@ -83,7 +79,6 @@ public class Register extends HttpServlet {
 				// 存在相同用户名
 				result.details = MyData.ERR_USERNAME;
 			}
-			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

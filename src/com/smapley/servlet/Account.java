@@ -10,12 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.mode.UserEntity;
 import com.smapley.utils.MyData;
@@ -25,8 +22,13 @@ import com.smapley.utils.MyData;
  */
 @WebServlet("/Account")
 public class Account extends HttpServlet {
-	private static final long serialVersionUID = 1L;
 
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private UserDAO userDAO = UserDAO.getFromApplicationContext(MyData.getCXT());
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -55,6 +57,8 @@ public class Account extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 
+		
+		
 		response.setContentType("text/html;charset=utf-8");
 		request.setCharacterEncoding("utf-8");
 		response.setCharacterEncoding("utf-8");
@@ -68,10 +72,7 @@ public class Account extends HttpServlet {
 			String birthday = request.getParameter("birthday");
 			System.out.println("--Account--" + truename + "--" + phone + "--"
 					+ birthday+"--"+skey);
-			
-			Transaction transaction = HibernateSessionFactory
-					.getSession().beginTransaction();
-			UserDAO userDAO = new UserDAO();
+	
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			System.out.println("---"+user.getSkey()+"----"+skey);
@@ -94,7 +95,6 @@ public class Account extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -10,11 +10,11 @@ public class ProUseEntity {
 	private String pic_url;
 	private int rank;
 
-	public ProUseEntity(ProUse prouse) {
-		use_id = prouse.getId().getUser().getUseId();
-		user_truename=prouse.getId().getUser().getTruename();
-		pic_url=prouse.getId().getUser().getPicUrl();
-		pro_id = prouse.getId().getProject().getProId();
+	public ProUseEntity(ProUse prouse) {		
+		use_id = prouse.getUser().getUseId();
+		user_truename=prouse.getUser().getTruename();
+		pic_url=prouse.getUser().getPicUrl();
+		pro_id = prouse.getProject().getProId();
 		rank = prouse.getRank();
 	}
 

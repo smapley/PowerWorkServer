@@ -12,15 +12,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Project;
-import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.Task;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.ProjectDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.OtherTaskEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
@@ -31,6 +28,11 @@ import com.smapley.utils.MyData;
 @WebServlet("/OtherTaskList")
 public class OtherTaskList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private UserDAO userDAO = UserDAO
+			.getFromApplicationContext(MyData.getCXT());
+	private ProjectDAO projectDAO = ProjectDAO.getFromApplicationContext(MyData
+			.getCXT());
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -55,7 +57,6 @@ public class OtherTaskList extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -71,10 +72,6 @@ public class OtherTaskList extends HttpServlet {
 			String pro_id = request.getParameter("pro_id");
 			System.out.println("--OtherTaskList--" + user_id);
 
-			Transaction transaction = HibernateSessionFactory.getSession()
-					.beginTransaction();
-			UserDAO userDAO = new UserDAO();
-			ProjectDAO projectDAO = new ProjectDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			if (user != null) {
@@ -100,7 +97,6 @@ public class OtherTaskList extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

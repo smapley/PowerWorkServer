@@ -10,12 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.mode.UserEntity;
 import com.smapley.utils.MyData;
@@ -26,7 +23,8 @@ import com.smapley.utils.MyData;
 @WebServlet("/Login")
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	
+	private UserDAO userDAO =UserDAO.getFromApplicationContext(MyData.getCXT());
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -64,11 +62,8 @@ public class Login extends HttpServlet {
 			String password = request.getParameter("password");
 			System.out.println("--登陆--" + username + "--" + password);
 			
-			Transaction transaction = HibernateSessionFactory.getSession()
-					.beginTransaction();
-			UserDAO userDAO =new UserDAO();
 			// 根据用户名查询
-			User user = (User) userDAO.findByUsername(username).get(0);
+			User user = userDAO.findByUsername(username).get(0);
 			// 判断密码
 			if (user.getPassword().equals(password)) {
 				String skey = getRandomString(20);
@@ -82,8 +77,7 @@ public class Login extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_PASSWORD;
 			}
-			transaction.commit();
-			HibernateSessionFactory.getSession().evict(user);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

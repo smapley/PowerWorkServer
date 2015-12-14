@@ -18,18 +18,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.hibernate.Transaction;
 
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Dynamic;
-import com.smapley.bean.DynamicDAO;
-import com.smapley.bean.FileDAO;
 import com.smapley.bean.Folder;
-import com.smapley.bean.FolderDAO;
-import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.DynamicDAO;
+import com.smapley.dao.FileDAO;
+import com.smapley.dao.FolderDAO;
+import com.smapley.dao.ProjectDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.FileEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
@@ -46,10 +44,20 @@ import com.smapley.utils.MyData;
  *         提供的 item.write( new File(path,filename) ); 直接写到磁盘上 第二种. 手动处理
  * 
  */
-@SuppressWarnings("serial")
 @WebServlet("/AddFile")
 public class AddFile extends HttpServlet {
 
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private UserDAO userDAO = UserDAO.getFromApplicationContext(MyData.getCXT());
+	private FileDAO fileDAO = FileDAO.getFromApplicationContext(MyData.getCXT());
+	private FolderDAO folderDAO = FolderDAO.getFromApplicationContext(MyData.getCXT());
+	private DynamicDAO dynamicDAO = DynamicDAO.getFromApplicationContext(MyData.getCXT());
+	private ProjectDAO projectDAO = ProjectDAO.getFromApplicationContext(MyData.getCXT());
+	
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -97,14 +105,8 @@ public class AddFile extends HttpServlet {
 			for (FileItem item : list) {
 				// 获取表单的属性名字
 				map.put(item.getFieldName(), item);
-			}
-			Transaction transaction = HibernateSessionFactory.getSession()
-					.beginTransaction();
-			UserDAO userDAO = new UserDAO();
-			FileDAO fileDAO = new FileDAO();
-			FolderDAO folderDAO = new FolderDAO();
-			DynamicDAO dynamicDAO = new DynamicDAO();
-			ProjectDAO projectDAO = new ProjectDAO();
+			}			
+			
 			user = userDAO.findById(Integer.parseInt(map.get("user_id")
 					.getString()));
 			if (user != null) {
@@ -192,7 +194,6 @@ public class AddFile extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

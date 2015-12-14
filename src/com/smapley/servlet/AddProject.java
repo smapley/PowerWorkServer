@@ -11,21 +11,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Dynamic;
-import com.smapley.bean.DynamicDAO;
 import com.smapley.bean.Folder;
-import com.smapley.bean.FolderDAO;
 import com.smapley.bean.ProUse;
-import com.smapley.bean.ProUseDAO;
 import com.smapley.bean.ProUseId;
 import com.smapley.bean.Project;
-import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.DynamicDAO;
+import com.smapley.dao.FolderDAO;
+import com.smapley.dao.ProUseDAO;
+import com.smapley.dao.ProjectDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.ProjectEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
@@ -36,6 +33,17 @@ import com.smapley.utils.MyData;
 @WebServlet("/AddProject")
 public class AddProject extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private UserDAO userDAO = UserDAO
+			.getFromApplicationContext(MyData.getCXT());
+	private ProjectDAO projectDAO = ProjectDAO.getFromApplicationContext(MyData
+			.getCXT());
+	private ProUseDAO proUseDAO = ProUseDAO.getFromApplicationContext(MyData
+			.getCXT());
+	private DynamicDAO dynamicDAO = DynamicDAO.getFromApplicationContext(MyData
+			.getCXT());
+	private FolderDAO folderDAO = FolderDAO.getFromApplicationContext(MyData
+			.getCXT());
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -60,7 +68,6 @@ public class AddProject extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -76,13 +83,6 @@ public class AddProject extends HttpServlet {
 			String name = request.getParameter("name");
 			System.out.println("--AddProject--" + user_id + "--" + name);
 
-			Transaction transaction = HibernateSessionFactory.getSession()
-					.beginTransaction();
-			UserDAO userDAO = new UserDAO();
-			ProjectDAO projectDAO = new ProjectDAO();
-			ProUseDAO proUseDAO = new ProUseDAO();
-			DynamicDAO dynamicDAO = new DynamicDAO();
-			FolderDAO folderDAO = new FolderDAO();
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			if (user != null) {
@@ -90,7 +90,7 @@ public class AddProject extends HttpServlet {
 				if (user.getSkey().equals(skey)) {
 					boolean isHad = false;
 					for (ProUse prouse : (Set<ProUse>) user.getProUses()) {
-						if (prouse.getId().getProject().getName().equals(name)) {
+						if (prouse.getProject().getName().equals(name)) {
 							isHad = true;
 							break;
 						}
@@ -101,14 +101,10 @@ public class AddProject extends HttpServlet {
 						project.setName(name);
 						project.setCreDate(new Timestamp(System
 								.currentTimeMillis()));
-						Transaction treTransaction = HibernateSessionFactory
-								.getSession().beginTransaction();
 						projectDAO.save(project);
-						ProUseId proUseId = new ProUseId();
-						proUseId.setProject(project);
-						proUseId.setUser(user);
 						ProUse prouse = new ProUse();
-						prouse.setId(proUseId);
+						prouse.setId(new ProUseId(user.getUseId(), project
+								.getProId()));
 						prouse.setRank(0);
 						proUseDAO.save(prouse);
 						Dynamic dynamic = new Dynamic();
@@ -134,7 +130,6 @@ public class AddProject extends HttpServlet {
 						folder2.setUser(user);
 						folder2.setName("声音");
 						folderDAO.save(folder2);
-						treTransaction.commit();
 						project = (Project) projectDAO.findByExample(project)
 								.get(0);
 						// 返回数据
@@ -152,7 +147,6 @@ public class AddProject extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

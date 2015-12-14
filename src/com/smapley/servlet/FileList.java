@@ -12,16 +12,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.File;
 import com.smapley.bean.Folder;
 import com.smapley.bean.Project;
-import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.ProjectDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.FileEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
@@ -32,6 +29,11 @@ import com.smapley.utils.MyData;
 @WebServlet("/FileList")
 public class FileList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private UserDAO userDAO = UserDAO
+			.getFromApplicationContext(MyData.getCXT());
+	private ProjectDAO projectDAO = ProjectDAO.getFromApplicationContext(MyData
+			.getCXT());
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -56,7 +58,6 @@ public class FileList extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings({ "unchecked", "unused" })
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -71,16 +72,12 @@ public class FileList extends HttpServlet {
 			String skey = request.getParameter("skey");
 			String pro_id = request.getParameter("pro_id");
 			System.out.println("--FileList--" + user_id);
-			
-			Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
-			UserDAO userDAO = new UserDAO();
-			ProjectDAO projectDAO = new ProjectDAO();
+
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
-			System.out.println("---" + user.getSkey() + "----" + skey);
 			if (user != null) {
 				// 判断skey
-				if (user.getSkey().equals(skey)) {					
+				if (user.getSkey().equals(skey)) {
 					Project project = projectDAO.findById(Integer
 							.parseInt(pro_id));
 					List<FileEntity> listFile = new ArrayList<FileEntity>();
@@ -99,7 +96,6 @@ public class FileList extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -112,10 +108,9 @@ public class FileList extends HttpServlet {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<FileEntity> getFile(Folder folder) {
 		List<FileEntity> listFile = new ArrayList<FileEntity>();
-		for(File file:(Set<File>) folder.getFiles()){
+		for (File file : (Set<File>) folder.getFiles()) {
 			listFile.add(new FileEntity(file));
 		}
 		Set<Folder> setFolder = (Set<Folder>) folder.getFolders();

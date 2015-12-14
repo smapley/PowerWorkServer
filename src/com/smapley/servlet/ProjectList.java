@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,13 +11,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.ProUse;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.ProjectEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
@@ -29,6 +25,9 @@ import com.smapley.utils.MyData;
 @WebServlet("/ProjectList")
 public class ProjectList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private UserDAO userDAO = UserDAO
+			.getFromApplicationContext(MyData.getCXT());
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -53,7 +52,6 @@ public class ProjectList extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings({ "unchecked", "unused" })
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -67,19 +65,16 @@ public class ProjectList extends HttpServlet {
 			String user_id = request.getParameter("user_id");
 			String skey = request.getParameter("skey");
 			System.out.println("--ProjectList--" + user_id);
-			
-			Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
-			UserDAO userDAO = new UserDAO();
+
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
-			System.out.println("---"+user.getSkey()+"----"+skey);
 			if (user != null) {
 				// 判断skey
 				if (user.getSkey().equals(skey)) {
 					List<ProjectEntity> listPro = new ArrayList<ProjectEntity>();
-					for (ProUse proUse : (Set<ProUse>) user.getProUses()) {
-						ProjectEntity project=new ProjectEntity(proUse.getId()
-								.getProject());
+					for (ProUse proUse :user.getProUses()) {
+						ProjectEntity project = new ProjectEntity(
+								proUse.getProject());
 						listPro.add(project);
 					}
 					// 返回数据
@@ -94,7 +89,6 @@ public class ProjectList extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

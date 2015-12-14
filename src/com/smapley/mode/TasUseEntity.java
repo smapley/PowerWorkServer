@@ -12,8 +12,8 @@ public class TasUseEntity {
 		
 	}
 	public TasUseEntity(TasUse tasuse) {
-		use_id = tasuse.getId().getUser().getUseId();
-		tas_id = tasuse.getId().getTask().getTasId();
+		use_id = tasuse.getUser().getUseId();
+		tas_id = tasuse.getTask().getTasId();
 		rank = tasuse.getId().getRank();
 	}
 

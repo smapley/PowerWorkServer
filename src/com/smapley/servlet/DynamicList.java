@@ -12,14 +12,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Project;
-import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.ProjectDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.DynamicEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
@@ -30,6 +27,11 @@ import com.smapley.utils.MyData;
 @WebServlet("/DynamicList")
 public class DynamicList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private UserDAO userDAO = UserDAO
+			.getFromApplicationContext(MyData.getCXT());
+	private ProjectDAO projectDAO = ProjectDAO.getFromApplicationContext(MyData
+			.getCXT());
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -54,7 +56,6 @@ public class DynamicList extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -69,20 +70,19 @@ public class DynamicList extends HttpServlet {
 			String skey = request.getParameter("skey");
 			String pro_id = request.getParameter("pro_id");
 			System.out.println("--DynamicList--" + user_id);
-			Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
 			// 根据id查询
-			UserDAO userDAO = new UserDAO();
-			ProjectDAO projectDAO = new ProjectDAO();
 			User user = userDAO.findById(Integer.parseInt(user_id));
 			if (user != null) {
 				// 判断skey
 				if (user.getSkey().equals(skey)) {
 					List<DynamicEntity> listDyn = new ArrayList<DynamicEntity>();
-					Project project=projectDAO.findById(Integer.parseInt(pro_id));
-					for(com.smapley.bean.Dynamic dynamic:(Set<com.smapley.bean.Dynamic>)project.getDynamics()){
-						listDyn.add(new DynamicEntity(dynamic,user));
+					Project project = projectDAO.findById(Integer
+							.parseInt(pro_id));
+					for (com.smapley.bean.Dynamic dynamic : (Set<com.smapley.bean.Dynamic>) project
+							.getDynamics()) {
+						listDyn.add(new DynamicEntity(dynamic, user));
 					}
-					
+
 					// 返回数据
 					result.flag = MyData.SUCC;
 					result.details = "";
@@ -95,7 +95,6 @@ public class DynamicList extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-			transaction.commit();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

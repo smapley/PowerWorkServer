@@ -18,24 +18,22 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.hibernate.Transaction;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Dynamic;
-import com.smapley.bean.DynamicDAO;
 import com.smapley.bean.Project;
-import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.TasUse;
-import com.smapley.bean.TasUseDAO;
 import com.smapley.bean.TasUseId;
 import com.smapley.bean.Task;
-import com.smapley.bean.TaskDAO;
 import com.smapley.bean.TaskDetails;
-import com.smapley.bean.TaskDetailsDAO;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.DynamicDAO;
+import com.smapley.dao.ProjectDAO;
+import com.smapley.dao.TasUseDAO;
+import com.smapley.dao.TaskDAO;
+import com.smapley.dao.TaskDetailsDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.mode.TasUseEntity;
 import com.smapley.utils.MyData;
@@ -52,9 +50,26 @@ import com.smapley.utils.MyData;
  *         提供的 item.write( new File(path,filename) ); 直接写到磁盘上 第二种. 手动处理
  * 
  */
-@SuppressWarnings("serial")
 @WebServlet("/AddTask")
 public class AddTask extends HttpServlet {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private UserDAO userDAO = UserDAO
+			.getFromApplicationContext(MyData.getCXT());
+	private TaskDAO taskDAO = TaskDAO
+			.getFromApplicationContext(MyData.getCXT());
+	private ProjectDAO projectDAO = ProjectDAO.getFromApplicationContext(MyData
+			.getCXT());
+	private TaskDetailsDAO taskDetailsDAO = TaskDetailsDAO
+			.getFromApplicationContext(MyData.getCXT());
+	private TasUseDAO tasUseDAO = TasUseDAO.getFromApplicationContext(MyData
+			.getCXT());
+	private DynamicDAO dynamicDao = DynamicDAO.getFromApplicationContext(MyData
+			.getCXT());
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -105,14 +120,6 @@ public class AddTask extends HttpServlet {
 				map.put(item.getFieldName(), item);
 			}
 
-			Transaction transaction = HibernateSessionFactory.getSession()
-					.beginTransaction();
-			UserDAO userDAO = new UserDAO();
-			TaskDAO taskDAO = new TaskDAO();
-			ProjectDAO projectDAO = new ProjectDAO();
-			TaskDetailsDAO taskDetailsDAO = new TaskDetailsDAO();
-			TasUseDAO tasUseDAO = new TasUseDAO();
-			DynamicDAO dynamicDao = new DynamicDAO();
 			user = userDAO.findById(Integer.parseInt(map.get("user_id")
 					.getString()));
 			if (user != null) {
@@ -134,13 +141,9 @@ public class AddTask extends HttpServlet {
 							});
 					for (int i = 0; i < listTasUse.size(); i++) {
 						TasUse tasUse = new TasUse();
-						TasUseId tasUseId = new TasUseId();
-						tasUseId.setTask(task);
-						User user1 = userDAO.findById(listTasUse.get(i)
-								.getUse_id());
-						tasUseId.setUser(user1);
-						tasUseId.setRank(listTasUse.get(i).getRank());
-						tasUse.setId(tasUseId);
+						tasUse.setId(new TasUseId(task.getTasId(), listTasUse
+								.get(i).getUse_id(), listTasUse.get(i)
+								.getRank()));
 						tasUseDAO.save(tasUse);
 					}
 					for (int i = 0; i < Integer.parseInt(map.get("size")
@@ -216,7 +219,6 @@ public class AddTask extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-			transaction.commit();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

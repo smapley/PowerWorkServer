@@ -12,15 +12,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Transaction;
-
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.Folder;
 import com.smapley.bean.Project;
-import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.ProjectDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.FolderEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
@@ -31,6 +28,11 @@ import com.smapley.utils.MyData;
 @WebServlet("/FolderList")
 public class FolderList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private ProjectDAO projectDAO = ProjectDAO.getFromApplicationContext(MyData
+			.getCXT());
+	private UserDAO userDAO = UserDAO
+			.getFromApplicationContext(MyData.getCXT());
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -55,7 +57,6 @@ public class FolderList extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings({ "unchecked", "unused" })
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -70,13 +71,9 @@ public class FolderList extends HttpServlet {
 			String skey = request.getParameter("skey");
 			String pro_id = request.getParameter("pro_id");
 			System.out.println("--FolderList--" + user_id);
-			
-			Transaction transaction=HibernateSessionFactory.getSession().beginTransaction();
-			ProjectDAO projectDAO = new ProjectDAO();
-			UserDAO userDAO = new UserDAO();
+
 			// 根据id查询
 			User user = userDAO.findById(Integer.parseInt(user_id));
-			System.out.println("---" + user.getSkey() + "----" + skey);
 			if (user != null) {
 				// 判断skey
 				if (user.getSkey().equals(skey)) {
@@ -99,7 +96,6 @@ public class FolderList extends HttpServlet {
 			} else {
 				result.details = MyData.ERR_NoUser;
 			}
-			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -112,7 +108,6 @@ public class FolderList extends HttpServlet {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<FolderEntity> getFolder(Folder folder) {
 		List<FolderEntity> listFolder = new ArrayList<FolderEntity>();
 		Set<Folder> setFolder = (Set<Folder>) folder.getFolders();

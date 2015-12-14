@@ -16,12 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.hibernate.Transaction;
 
 import com.alibaba.fastjson.JSON;
-import com.smapley.HibernateSessionFactory;
 import com.smapley.bean.User;
-import com.smapley.bean.UserDAO;
+import com.smapley.dao.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.mode.UserEntity;
 import com.smapley.utils.Code;
@@ -39,10 +37,17 @@ import com.smapley.utils.MyData;
  *         提供的 item.write( new File(path,filename) ); 直接写到磁盘上 第二种. 手动处理
  * 
  */
-@SuppressWarnings("serial")
 @WebServlet("/UserPicUpLoad")
 public class UserPicUpLoad extends HttpServlet {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private UserDAO userDAO = UserDAO
+			.getFromApplicationContext(MyData.getCXT());
+	
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -90,9 +95,7 @@ public class UserPicUpLoad extends HttpServlet {
 					map.put(item.getFieldName(), item.getString());
 				}
 			}
-			Transaction transaction = HibernateSessionFactory.getSession()
-					.beginTransaction();
-			UserDAO userDAO = new UserDAO();
+			
 			user = userDAO.findById(Integer.parseInt(map.get("user_id")));
 			if (user != null) {
 				if (user.getSkey().equals(map.get("skey"))) {
@@ -139,7 +142,6 @@ public class UserPicUpLoad extends HttpServlet {
 				result.details = MyData.ERR_NoUser;
 			}
 
-			transaction.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
