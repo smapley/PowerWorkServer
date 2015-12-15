@@ -11,13 +11,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Folder;
 import com.smapley.bean.Project;
 import com.smapley.bean.User;
 import com.smapley.dao.ProjectDAO;
-import com.smapley.dao.UserDAO;
 import com.smapley.mode.FolderEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
@@ -31,8 +31,6 @@ public class FolderList extends HttpServlet {
 
 	private ProjectDAO projectDAO = ProjectDAO.getFromApplicationContext(MyData
 			.getCXT());
-	private UserDAO userDAO = UserDAO
-			.getFromApplicationContext(MyData.getCXT());
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -67,41 +65,34 @@ public class FolderList extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		Result result = new Result();
 		try {
-			String user_id = request.getParameter("user_id");
-			String skey = request.getParameter("skey");
 			String pro_id = request.getParameter("pro_id");
-			System.out.println("--FolderList--" + user_id);
+			System.out.println("--FolderList--" + pro_id);
 
-			// 根据id查询
-			User user = userDAO.findById(Integer.parseInt(user_id));
-			if (user != null) {
-				// 判断skey
-				if (user.getSkey().equals(skey)) {
-					Project project = projectDAO.findById(Integer
-							.parseInt(pro_id));
-					List<FolderEntity> listFolder = new ArrayList<FolderEntity>();
-					for (Folder folder : (Set<Folder>) project.getFolders()) {
-						listFolder.add(new FolderEntity(folder));
-						listFolder.addAll(getFolder(folder));
-					}
-					// 返回数据
-					result.flag = MyData.SUCC;
-					result.details = "";
-					result.data = JSON.toJSONString(listFolder);
-
-				} else {
-					result.flag = MyData.OutLogin;
-					result.details = MyData.ERR_OutLogin;
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				User user = (User) session.getAttribute(
+						"user");
+				Project project = projectDAO.findById(Integer.parseInt(pro_id));
+				List<FolderEntity> listFolder = new ArrayList<FolderEntity>();
+				for (Folder folder : (Set<Folder>) project.getFolders()) {
+					listFolder.add(new FolderEntity(folder));
+					listFolder.addAll(getFolder(folder));
 				}
+				// 返回数据
+				result.flag = MyData.SUCC;
+				result.details = "";
+				result.data = JSON.toJSONString(listFolder);
+
 			} else {
-				result.details = MyData.ERR_NoUser;
+				result.flag = MyData.OutLogin;
+				result.details = MyData.ERR_OutLogin;
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--result--" + result.flag + "--" + result.details
-				+ "--" + result.data);
+		System.out.println("--FolderList--result--" + result.flag + "--"
+				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();
 		out.close();

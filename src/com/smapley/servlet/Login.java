@@ -2,13 +2,13 @@ package com.smapley.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Random;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.User;
@@ -41,7 +41,6 @@ public class Login extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doPost(request, response);
-
 	}
 
 	/**
@@ -66,9 +65,10 @@ public class Login extends HttpServlet {
 			User user = userDAO.findByUsername(username).get(0);
 			// 判断密码
 			if (user.getPassword().equals(password)) {
-				String skey = getRandomString(20);
+				HttpSession session=request.getSession();
+				session.setAttribute( "user", user);
 				// 设置skey并保存
-				user.setSkey(skey);				
+				user.setSkey(session.getId());				
 				userDAO.attachDirty(user);	
 				result.flag = MyData.SUCC;
 				result.details = "";
@@ -89,22 +89,5 @@ public class Login extends HttpServlet {
 		out.flush();
 		out.close();
 
-	}
-
-	/**
-	 * 随机生成字符串
-	 * 
-	 * @param length
-	 * @return
-	 */
-	private String getRandomString(int length) {
-		String base = "abcdefghijklmnopqrstuvwxyz0123456789";
-		Random random = new Random();
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < length; i++) {
-			int number = random.nextInt(base.length());
-			sb.append(base.charAt(number));
-		}
-		return sb.toString();
 	}
 }

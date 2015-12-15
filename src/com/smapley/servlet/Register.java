@@ -83,7 +83,7 @@ public class Register extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--result--" + result.flag + "--" + result.details
+		System.out.println("--注册--result--" + result.flag + "--" + result.details
 				+ "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();

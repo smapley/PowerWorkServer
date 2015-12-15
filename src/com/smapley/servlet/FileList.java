@@ -11,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.File;
@@ -18,7 +19,6 @@ import com.smapley.bean.Folder;
 import com.smapley.bean.Project;
 import com.smapley.bean.User;
 import com.smapley.dao.ProjectDAO;
-import com.smapley.dao.UserDAO;
 import com.smapley.mode.FileEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
@@ -30,8 +30,6 @@ import com.smapley.utils.MyData;
 public class FileList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private UserDAO userDAO = UserDAO
-			.getFromApplicationContext(MyData.getCXT());
 	private ProjectDAO projectDAO = ProjectDAO.getFromApplicationContext(MyData
 			.getCXT());
 
@@ -68,40 +66,33 @@ public class FileList extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		Result result = new Result();
 		try {
-			String user_id = request.getParameter("user_id");
-			String skey = request.getParameter("skey");
 			String pro_id = request.getParameter("pro_id");
-			System.out.println("--FileList--" + user_id);
+			System.out.println("--FileList--" + pro_id);
 
-			// 根据id查询
-			User user = userDAO.findById(Integer.parseInt(user_id));
-			if (user != null) {
-				// 判断skey
-				if (user.getSkey().equals(skey)) {
-					Project project = projectDAO.findById(Integer
-							.parseInt(pro_id));
-					List<FileEntity> listFile = new ArrayList<FileEntity>();
-					for (Folder folder : (Set<Folder>) project.getFolders()) {
-						listFile.addAll(getFile(folder));
-					}
-					// 返回数据
-					result.flag = MyData.SUCC;
-					result.details = "";
-					result.data = JSON.toJSONString(listFile);
-
-				} else {
-					result.flag = MyData.OutLogin;
-					result.details = MyData.ERR_OutLogin;
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				User user = (User) session.getAttribute(
+						"user");
+				Project project = projectDAO.findById(Integer.parseInt(pro_id));
+				List<FileEntity> listFile = new ArrayList<FileEntity>();
+				for (Folder folder : (Set<Folder>) project.getFolders()) {
+					listFile.addAll(getFile(folder));
 				}
+				// 返回数据
+				result.flag = MyData.SUCC;
+				result.details = "";
+				result.data = JSON.toJSONString(listFile);
+
 			} else {
-				result.details = MyData.ERR_NoUser;
+				result.flag = MyData.OutLogin;
+				result.details = MyData.ERR_OutLogin;
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--result--" + result.flag + "--" + result.details
-				+ "--" + result.data);
+		System.out.println("--FileList--result--" + result.flag + "--"
+				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();
 		out.close();

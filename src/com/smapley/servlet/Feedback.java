@@ -9,12 +9,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Feedbacks;
 import com.smapley.bean.User;
 import com.smapley.dao.FeedbacksDAO;
-import com.smapley.dao.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 
@@ -25,8 +25,6 @@ import com.smapley.utils.MyData;
 public class Feedback extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private UserDAO userDAO = UserDAO
-			.getFromApplicationContext(MyData.getCXT());
 	private FeedbacksDAO feedbacksDAO = FeedbacksDAO
 			.getFromApplicationContext(MyData.getCXT());
 
@@ -63,39 +61,32 @@ public class Feedback extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		Result result = new Result();
 		try {
-			String user_id = request.getParameter("user_id");
-			String skey = request.getParameter("skey");
 			String details = request.getParameter("details");
-			System.out.println("--Feedback--" + user_id + "--" + details);
+			System.out.println("--Feedback--" + details);
 
-			// 根据id查询
-			User user = userDAO.findById(Integer.parseInt(user_id));
-			if (user != null) {
-				// 判断skey
-				if (user.getSkey().equals(skey)) {
-					// 设置新信息
-					Feedbacks feedbacks = new Feedbacks();
-					feedbacks.setUser(user);
-					feedbacks.setDetails(details);
-					feedbacks.setCreDate(new Timestamp(System
-							.currentTimeMillis()));
-					feedbacksDAO.save(feedbacks);
-					// 返回数据
-					result.flag = MyData.SUCC;
-					result.details = "";
-				} else {
-					result.flag = MyData.OutLogin;
-					result.details = MyData.ERR_OutLogin;
-				}
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				User user = (User) session.getAttribute(
+						"user");
+				// 设置新信息
+				Feedbacks feedbacks = new Feedbacks();
+				feedbacks.setUser(user);
+				feedbacks.setDetails(details);
+				feedbacks.setCreDate(new Timestamp(System.currentTimeMillis()));
+				feedbacksDAO.save(feedbacks);
+				// 返回数据
+				result.flag = MyData.SUCC;
+				result.details = "";
 			} else {
-				result.details = MyData.ERR_NoUser;
+				result.flag = MyData.OutLogin;
+				result.details = MyData.ERR_OutLogin;
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--result--" + result.flag + "--" + result.details
-				+ "--" + result.data);
+		System.out.println("--Feedback--result--" + result.flag + "--"
+				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();
 		out.close();

@@ -10,11 +10,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.TasUse;
 import com.smapley.bean.User;
-import com.smapley.dao.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.mode.TaskEntity;
 import com.smapley.utils.MyData;
@@ -25,9 +25,6 @@ import com.smapley.utils.MyData;
 @WebServlet("/TaskList")
 public class TaskList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
-	private UserDAO userDAO = UserDAO
-			.getFromApplicationContext(MyData.getCXT());
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -62,38 +59,32 @@ public class TaskList extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		Result result = new Result();
 		try {
-			String user_id = request.getParameter("user_id");
-			String skey = request.getParameter("skey");
-			System.out.println("--TaskList--" + user_id);
+			System.out.println("--TaskList--");
 
-			// 根据id查询
-			User user = userDAO.findById(Integer.parseInt(user_id));
-			if (user != null) {
-				// 判断skey
-				if (user.getSkey().equals(skey)) {
-					List<TaskEntity> listTask = new ArrayList<TaskEntity>();
-					for (TasUse tasUse :user.getTasUses()) {
-						TaskEntity taskEntity = new TaskEntity(tasUse);
-						listTask.add(taskEntity);
-					}
-					// 返回数据
-					result.flag = MyData.SUCC;
-					result.details = "";
-					result.data = JSON.toJSONString(listTask);
-
-				} else {
-					result.flag = MyData.OutLogin;
-					result.details = MyData.ERR_OutLogin;
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				User user = (User) session.getAttribute(
+						"user");
+				List<TaskEntity> listTask = new ArrayList<TaskEntity>();
+				for (TasUse tasUse : user.getTasUses()) {
+					TaskEntity taskEntity = new TaskEntity(tasUse);
+					listTask.add(taskEntity);
 				}
+				// 返回数据
+				result.flag = MyData.SUCC;
+				result.details = "";
+				result.data = JSON.toJSONString(listTask);
+
 			} else {
-				result.details = MyData.ERR_NoUser;
+				result.flag = MyData.OutLogin;
+				result.details = MyData.ERR_OutLogin;
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--result--" + result.flag + "--" + result.details
-				+ "--" + result.data);
+		System.out.println("--TaskList--result--" + result.flag + "--"
+				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();
 		out.close();

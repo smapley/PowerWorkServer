@@ -14,6 +14,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -25,7 +26,6 @@ import com.smapley.bean.NoteDetails;
 import com.smapley.bean.User;
 import com.smapley.dao.NoteDAO;
 import com.smapley.dao.NoteDetailsDAO;
-import com.smapley.dao.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 
@@ -49,8 +49,6 @@ public class AddNote extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private UserDAO userDAO = UserDAO
-			.getFromApplicationContext(MyData.getCXT());
 	private NoteDAO noteDAO = NoteDAO
 			.getFromApplicationContext(MyData.getCXT());
 	private NoteDetailsDAO noteDetailsDAO = NoteDetailsDAO
@@ -65,7 +63,6 @@ public class AddNote extends HttpServlet {
 		response.setCharacterEncoding("utf-8");
 		PrintWriter out = response.getWriter();
 		Result result = new Result();
-		User user = null;
 
 		System.out.println("---AddNote---");
 
@@ -105,10 +102,10 @@ public class AddNote extends HttpServlet {
 				map.put(item.getFieldName(), item);
 			}
 
-			user = userDAO.findById(Integer.parseInt(map.get("user_id")
-					.getString()));
-			if (user != null) {
-				if (user.getSkey().equals(map.get("skey").getString("utf-8"))) {
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				User user = (User) session.getAttribute(
+						"user");
 					// 添加note
 					Note note = new Note();
 					note.setName(map.get("name").getString("utf-8"));
@@ -180,9 +177,6 @@ public class AddNote extends HttpServlet {
 					result.flag = MyData.OutLogin;
 					result.details = MyData.ERR_OutLogin;
 				}
-			} else {
-				result.details = MyData.ERR_NoUser;
-			}
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -190,7 +184,7 @@ public class AddNote extends HttpServlet {
 			result.details = MyData.ERR_UpLoadFail;
 		}
 
-		System.out.println("--result--" + result.flag + "--" + result.details
+		System.out.println("---AddNote--result--" + result.flag + "--" + result.details
 				+ "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();

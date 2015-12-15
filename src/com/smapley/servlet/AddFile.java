@@ -14,6 +14,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -27,7 +28,6 @@ import com.smapley.dao.DynamicDAO;
 import com.smapley.dao.FileDAO;
 import com.smapley.dao.FolderDAO;
 import com.smapley.dao.ProjectDAO;
-import com.smapley.dao.UserDAO;
 import com.smapley.mode.FileEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
@@ -47,17 +47,19 @@ import com.smapley.utils.MyData;
 @WebServlet("/AddFile")
 public class AddFile extends HttpServlet {
 
-	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private UserDAO userDAO = UserDAO.getFromApplicationContext(MyData.getCXT());
-	private FileDAO fileDAO = FileDAO.getFromApplicationContext(MyData.getCXT());
-	private FolderDAO folderDAO = FolderDAO.getFromApplicationContext(MyData.getCXT());
-	private DynamicDAO dynamicDAO = DynamicDAO.getFromApplicationContext(MyData.getCXT());
-	private ProjectDAO projectDAO = ProjectDAO.getFromApplicationContext(MyData.getCXT());
-	
+	private FileDAO fileDAO = FileDAO
+			.getFromApplicationContext(MyData.getCXT());
+	private FolderDAO folderDAO = FolderDAO.getFromApplicationContext(MyData
+			.getCXT());
+	private DynamicDAO dynamicDAO = DynamicDAO.getFromApplicationContext(MyData
+			.getCXT());
+	private ProjectDAO projectDAO = ProjectDAO.getFromApplicationContext(MyData
+			.getCXT());
+
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -67,7 +69,6 @@ public class AddFile extends HttpServlet {
 		response.setCharacterEncoding("utf-8");
 		PrintWriter out = response.getWriter();
 		Result result = new Result();
-		User user = null;
 
 		System.out.println("---AddFile---");
 
@@ -105,94 +106,90 @@ public class AddFile extends HttpServlet {
 			for (FileItem item : list) {
 				// 获取表单的属性名字
 				map.put(item.getFieldName(), item);
-			}			
-			
-			user = userDAO.findById(Integer.parseInt(map.get("user_id")
-					.getString()));
-			if (user != null) {
-				if (user.getSkey().equals(map.get("skey").getString("utf-8"))) {
-					int pro_id = Integer.parseInt(map.get("pro_id").getString(
+			}
+
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				User user = (User) session.getAttribute(
+						"user");
+				int pro_id = Integer.parseInt(map.get("pro_id").getString(
+						"utf-8"));
+				List<FileEntity> listFile = new ArrayList<FileEntity>();
+
+				for (int i = 0; i < Integer.parseInt(map.get("size").getString(
+						"utf-8")); i++) {
+					com.smapley.bean.File file = new com.smapley.bean.File();
+					Folder folder = folderDAO.findById(Integer.parseInt(map
+							.get("fol_id").getString("utf-8")));
+					file.setFolder(folder);
+					file.setUser(user);
+					file.setCreDate(new Timestamp(System.currentTimeMillis()));
+					int type = Integer.parseInt(map.get("type" + i).getString(
 							"utf-8"));
-					List<FileEntity> listFile = new ArrayList<FileEntity>();
-
-					for (int i = 0; i < Integer.parseInt(map.get("size")
-							.getString("utf-8")); i++) {
-						com.smapley.bean.File file = new com.smapley.bean.File();
-						Folder folder = folderDAO.findById(Integer.parseInt(map
-								.get("fol_id").getString("utf-8")));
-						file.setFolder(folder);
-						file.setUser(user);
-						file.setCreDate(new Timestamp(System
-								.currentTimeMillis()));
-						int type = Integer.parseInt(map.get("type" + i)
-								.getString("utf-8"));
-						file.setType(type);
-						switch (type) {
-						case 1:
-							FileItem item1 = map.get("file" + i);
-							/**
-							 * 以下三步，主要获取 上传文件的名字
-							 */
-							// 获取路径名
-							String value1 = item1.getName();
-							// 索引到最后一个反斜杠
-							int start1 = value1.lastIndexOf("\\");
-							// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
-							String filename1 = value1.substring(start1 + 1);
-							String[] filenames1 = filename1.split("\\.");
-							file.setName(filename1);
-							filename1 = folder.getFolId() + "_"
-									+ System.currentTimeMillis() + "."
-									+ filenames1[filenames1.length - 1];
-							// 真正写到磁盘上
-							// 它抛出的异常 用exception 捕捉
-							item1.write(new File(picPath, filename1));// 第三方提供的
-							file.setUrl("pic/" + filename1);
-							System.out.println("=================");
-							break;
-						case 2:
-							FileItem item = map.get("file" + i);
-							/**
-							 * 以下三步，主要获取 上传文件的名字
-							 */
-							// 获取路径名
-							String value = item.getName();
-							// 索引到最后一个反斜杠
-							int start = value.lastIndexOf("\\");
-							// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
-							String filename = value.substring(start + 1);
-							String[] filenames = filename.split("\\.");
-							file.setName(filename);
-							filename = folder.getFolId() + "_"
-									+ System.currentTimeMillis() + "."
-									+ filenames[filenames.length - 1];
-							// 真正写到磁盘上
-							// 它抛出的异常 用exception 捕捉
-							item.write(new File(voiceFile, filename));// 第三方提供的
-							file.setUrl("voice/" + filename);
-							break;
-						}
-						fileDAO.save(file);
-						Dynamic dynamic = new Dynamic();
-						dynamic.setProject(projectDAO.findById(pro_id));
-						dynamic.setUser(user);
-						dynamic.setFile(file);
-						dynamic.setType(2);
-						dynamic.setCreDate(new Timestamp(System
-								.currentTimeMillis()));
-						dynamicDAO.save(dynamic);
-						listFile.add(new FileEntity(file));
+					file.setType(type);
+					switch (type) {
+					case 1:
+						FileItem item1 = map.get("file" + i);
+						/**
+						 * 以下三步，主要获取 上传文件的名字
+						 */
+						// 获取路径名
+						String value1 = item1.getName();
+						// 索引到最后一个反斜杠
+						int start1 = value1.lastIndexOf("\\");
+						// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
+						String filename1 = value1.substring(start1 + 1);
+						String[] filenames1 = filename1.split("\\.");
+						file.setName(filename1);
+						filename1 = folder.getFolId() + "_"
+								+ System.currentTimeMillis() + "."
+								+ filenames1[filenames1.length - 1];
+						// 真正写到磁盘上
+						// 它抛出的异常 用exception 捕捉
+						item1.write(new File(picPath, filename1));// 第三方提供的
+						file.setUrl("pic/" + filename1);
+						System.out.println("=================");
+						break;
+					case 2:
+						FileItem item = map.get("file" + i);
+						/**
+						 * 以下三步，主要获取 上传文件的名字
+						 */
+						// 获取路径名
+						String value = item.getName();
+						// 索引到最后一个反斜杠
+						int start = value.lastIndexOf("\\");
+						// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
+						String filename = value.substring(start + 1);
+						String[] filenames = filename.split("\\.");
+						file.setName(filename);
+						filename = folder.getFolId() + "_"
+								+ System.currentTimeMillis() + "."
+								+ filenames[filenames.length - 1];
+						// 真正写到磁盘上
+						// 它抛出的异常 用exception 捕捉
+						item.write(new File(voiceFile, filename));// 第三方提供的
+						file.setUrl("voice/" + filename);
+						break;
 					}
-
-					result.flag = MyData.SUCC;
-					result.details = "";
-					result.data = JSON.toJSONString(listFile);
-				} else {
-					result.flag = MyData.OutLogin;
-					result.details = MyData.ERR_OutLogin;
+					fileDAO.save(file);
+					Dynamic dynamic = new Dynamic();
+					dynamic.setProject(projectDAO.findById(pro_id));
+					dynamic.setUser(user);
+					dynamic.setFile(file);
+					dynamic.setType(2);
+					dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
+					dynamicDAO.save(dynamic);
+					
+					listFile.add(new FileEntity(file));
 				}
+
+				result.flag = MyData.SUCC;
+				result.details = "";
+				result.data = JSON.toJSONString(listFile);
 			} else {
-				result.details = MyData.ERR_NoUser;
+				result.flag = MyData.OutLogin;
+				result.details = MyData.ERR_OutLogin;
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -200,8 +197,8 @@ public class AddFile extends HttpServlet {
 			result.details = MyData.ERR_UpLoadFail;
 		}
 
-		System.out.println("--result--" + result.flag + "--" + result.details
-				+ "--" + result.data);
+		System.out.println("---AddFile--result--" + result.flag + "--"
+				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();
 		out.close();

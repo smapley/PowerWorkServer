@@ -8,12 +8,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Folder;
 import com.smapley.bean.User;
 import com.smapley.dao.FolderDAO;
-import com.smapley.dao.UserDAO;
 import com.smapley.mode.FolderEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
@@ -25,8 +25,6 @@ import com.smapley.utils.MyData;
 public class AddFolder extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private UserDAO userDAO = UserDAO
-			.getFromApplicationContext(MyData.getCXT());
 	private FolderDAO folderDAO = FolderDAO.getFromApplicationContext(MyData
 			.getCXT());
 
@@ -63,17 +61,14 @@ public class AddFolder extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		Result result = new Result();
 		try {
-			String user_id = request.getParameter("user_id");
-			String skey = request.getParameter("skey");
 			String name = request.getParameter("name");
 			String fol_id = request.getParameter("fol_id");
-			System.out.println("--AddFolder--" + user_id + "--" + name);
+			System.out.println("--AddFolder--" + fol_id + "--" + name);
 
-			// 根据id查询
-			User user = userDAO.findById(Integer.parseInt(user_id));
-			if (user != null) {
-				// 判断skey
-				if (user.getSkey().equals(skey)) {
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				User user = (User) session.getAttribute(
+						"user");
 					Folder folder0 = folderDAO.findById(Integer.decode(fol_id));
 					Folder folder = new Folder();
 					folder.setName(name);
@@ -89,14 +84,12 @@ public class AddFolder extends HttpServlet {
 					result.flag = MyData.OutLogin;
 					result.details = MyData.ERR_OutLogin;
 				}
-			} else {
-				result.details = MyData.ERR_NoUser;
-			}
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--result--" + result.flag + "--" + result.details
+		System.out.println("--AddFolder--result--" + result.flag + "--" + result.details
 				+ "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();

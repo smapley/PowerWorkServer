@@ -14,6 +14,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -33,7 +34,6 @@ import com.smapley.dao.ProjectDAO;
 import com.smapley.dao.TasUseDAO;
 import com.smapley.dao.TaskDAO;
 import com.smapley.dao.TaskDetailsDAO;
-import com.smapley.dao.UserDAO;
 import com.smapley.mode.Result;
 import com.smapley.mode.TasUseEntity;
 import com.smapley.utils.MyData;
@@ -58,8 +58,6 @@ public class AddTask extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private UserDAO userDAO = UserDAO
-			.getFromApplicationContext(MyData.getCXT());
 	private TaskDAO taskDAO = TaskDAO
 			.getFromApplicationContext(MyData.getCXT());
 	private ProjectDAO projectDAO = ProjectDAO.getFromApplicationContext(MyData
@@ -80,7 +78,6 @@ public class AddTask extends HttpServlet {
 		response.setCharacterEncoding("utf-8");
 		PrintWriter out = response.getWriter();
 		Result result = new Result();
-		User user = null;
 
 		System.out.println("---AddTask---");
 
@@ -120,104 +117,100 @@ public class AddTask extends HttpServlet {
 				map.put(item.getFieldName(), item);
 			}
 
-			user = userDAO.findById(Integer.parseInt(map.get("user_id")
-					.getString()));
-			if (user != null) {
-				if (user.getSkey().equals(map.get("skey").getString("utf-8"))) {
-					// 添加task
-					Task task = new Task();
-					task.setName(map.get("name").getString("utf-8"));
-					Project project = projectDAO.findById(Integer.parseInt(map
-							.get("pro_id").getString("utf-8")));
-					task.setProject(project);
-					task.setEndDate(new Timestamp(Long.parseLong(map.get(
-							"endtime").getString("utf-8"))));
-					task.setCreDate(new Timestamp(System.currentTimeMillis()));
-					taskDAO.save(task);
-					System.out.println(map.get("tasuse").getString("utf-8"));
-					List<TasUseEntity> listTasUse = JSON.parseObject(
-							map.get("tasuse").getString("utf-8"),
-							new TypeReference<List<TasUseEntity>>() {
-							});
-					for (int i = 0; i < listTasUse.size(); i++) {
-						TasUse tasUse = new TasUse();
-						tasUse.setId(new TasUseId(task.getTasId(), listTasUse
-								.get(i).getUse_id(), listTasUse.get(i)
-								.getRank()));
-						tasUseDAO.save(tasUse);
-					}
-					for (int i = 0; i < Integer.parseInt(map.get("size")
-							.getString("utf-8")); i++) {
-						TaskDetails taskDetails = new TaskDetails();
-						taskDetails.setTask(task);
-						int type = Integer.parseInt(map.get("type" + i)
-								.getString("utf-8"));
-						taskDetails.setType(type);
-						switch (type) {
-						case 5:
-							taskDetails.setText(map.get("text" + i).getString(
-									"utf-8"));
-							break;
-						case 4:
-							FileItem item = map.get("file" + i);
-							/**
-							 * 以下三步，主要获取 上传文件的名字
-							 */
-							// 获取路径名
-							String value = item.getName();
-							// 索引到最后一个反斜杠
-							int start = value.lastIndexOf("\\");
-							// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
-							String filename = value.substring(start + 1);
-							filename = user.getUseId() + "_"
-									+ System.currentTimeMillis() + "."
-									+ filename.split("\\.")[1];
-							// 真正写到磁盘上
-							// 它抛出的异常 用exception 捕捉
-							item.write(new File(voiceFile, filename));// 第三方提供的
-							taskDetails.setPath("voice/" + filename);
-							taskDetails.setLength(new Time(Long.parseLong(map
-									.get("length" + i).getString())));
-							break;
-
-						case 3:
-							FileItem item1 = map.get("file" + i);
-							/**
-							 * 以下三步，主要获取 上传文件的名字
-							 */
-							// 获取路径名
-							String value1 = item1.getName();
-							// 索引到最后一个反斜杠
-							int start1 = value1.lastIndexOf("\\");
-							// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
-							String filename1 = value1.substring(start1 + 1);
-							filename1 = user.getUseId() + "_"
-									+ System.currentTimeMillis() + "."
-									+ filename1.split("\\.")[1];
-							// 真正写到磁盘上
-							// 它抛出的异常 用exception 捕捉
-							item1.write(new File(picPath, filename1));// 第三方提供的
-							taskDetails.setPath("pic/" + filename1);
-							break;
-						}
-						taskDetailsDAO.save(taskDetails);
-					}
-					Dynamic dynamic = new Dynamic();
-					dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
-					dynamic.setUser(user);
-					dynamic.setProject(project);
-					dynamic.setTask(task);
-					dynamic.setType(1);
-					dynamicDao.save(dynamic);
-
-					result.flag = MyData.SUCC;
-					result.details = "";
-				} else {
-					result.flag = MyData.OutLogin;
-					result.details = MyData.ERR_OutLogin;
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				User user = (User) session.getAttribute(
+						"user");
+				// 添加task
+				Task task = new Task();
+				task.setName(map.get("name").getString("utf-8"));
+				Project project = projectDAO.findById(Integer.parseInt(map.get(
+						"pro_id").getString("utf-8")));
+				task.setProject(project);
+				task.setEndDate(new Timestamp(Long.parseLong(map.get("endtime")
+						.getString("utf-8"))));
+				task.setCreDate(new Timestamp(System.currentTimeMillis()));
+				taskDAO.save(task);
+				System.out.println(map.get("tasuse").getString("utf-8"));
+				List<TasUseEntity> listTasUse = JSON.parseObject(
+						map.get("tasuse").getString("utf-8"),
+						new TypeReference<List<TasUseEntity>>() {
+						});
+				for (int i = 0; i < listTasUse.size(); i++) {
+					TasUse tasUse = new TasUse();
+					tasUse.setId(new TasUseId(task.getTasId(), listTasUse
+							.get(i).getUse_id(), listTasUse.get(i).getRank()));
+					tasUseDAO.save(tasUse);
 				}
+				for (int i = 0; i < Integer.parseInt(map.get("size").getString(
+						"utf-8")); i++) {
+					TaskDetails taskDetails = new TaskDetails();
+					taskDetails.setTask(task);
+					int type = Integer.parseInt(map.get("type" + i).getString(
+							"utf-8"));
+					taskDetails.setType(type);
+					switch (type) {
+					case 5:
+						taskDetails.setText(map.get("text" + i).getString(
+								"utf-8"));
+						break;
+					case 4:
+						FileItem item = map.get("file" + i);
+						/**
+						 * 以下三步，主要获取 上传文件的名字
+						 */
+						// 获取路径名
+						String value = item.getName();
+						// 索引到最后一个反斜杠
+						int start = value.lastIndexOf("\\");
+						// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
+						String filename = value.substring(start + 1);
+						filename = user.getUseId() + "_"
+								+ System.currentTimeMillis() + "."
+								+ filename.split("\\.")[1];
+						// 真正写到磁盘上
+						// 它抛出的异常 用exception 捕捉
+						item.write(new File(voiceFile, filename));// 第三方提供的
+						taskDetails.setPath("voice/" + filename);
+						taskDetails.setLength(new Time(Long.parseLong(map.get(
+								"length" + i).getString())));
+						break;
+
+					case 3:
+						FileItem item1 = map.get("file" + i);
+						/**
+						 * 以下三步，主要获取 上传文件的名字
+						 */
+						// 获取路径名
+						String value1 = item1.getName();
+						// 索引到最后一个反斜杠
+						int start1 = value1.lastIndexOf("\\");
+						// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
+						String filename1 = value1.substring(start1 + 1);
+						filename1 = user.getUseId() + "_"
+								+ System.currentTimeMillis() + "."
+								+ filename1.split("\\.")[1];
+						// 真正写到磁盘上
+						// 它抛出的异常 用exception 捕捉
+						item1.write(new File(picPath, filename1));// 第三方提供的
+						taskDetails.setPath("pic/" + filename1);
+						break;
+					}
+					taskDetailsDAO.save(taskDetails);
+				}
+				Dynamic dynamic = new Dynamic();
+				dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
+				dynamic.setUser(user);
+				dynamic.setProject(project);
+				dynamic.setTask(task);
+				dynamic.setType(1);
+				dynamicDao.save(dynamic);
+
+				result.flag = MyData.SUCC;
+				result.details = "";
 			} else {
-				result.details = MyData.ERR_NoUser;
+				result.flag = MyData.OutLogin;
+				result.details = MyData.ERR_OutLogin;
 			}
 
 		} catch (Exception e) {
@@ -226,8 +219,8 @@ public class AddTask extends HttpServlet {
 			result.details = MyData.ERR_UpLoadFail;
 		}
 
-		System.out.println("--result--" + result.flag + "--" + result.details
-				+ "--" + result.data);
+		System.out.println("---AddTask--result--" + result.flag + "--"
+				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();
 		out.close();
