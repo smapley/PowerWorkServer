@@ -15,9 +15,9 @@ import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Project;
+import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
-import com.smapley.dao.ProjectDAO;
-import com.smapley.mode.DynamicEntity;
+import com.smapley.entity.DynamicEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 
@@ -75,7 +75,7 @@ public class DynamicList extends HttpServlet {
 				Project project = projectDAO.findById(Integer.parseInt(pro_id));
 				for (com.smapley.bean.Dynamic dynamic : (Set<com.smapley.bean.Dynamic>) project
 						.getDynamics()) {
-					listDyn.add(new DynamicEntity(dynamic, user));
+					listDyn.add(new DynamicEntity(dynamic));
 				}
 
 				// 返回数据

@@ -6,6 +6,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class MyData {
 
 	public static final String SUCC = "succeed";
+	public static final String NOTNEW = "NotNew";
+	public static final String ISNEW = "IsNew";
 	public static final String FAIL = "fail";
 	public static final String OutLogin = "OutLogin";
 	public static final String ERR = "程序错误！";

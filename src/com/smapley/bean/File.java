@@ -31,6 +31,8 @@ public class File implements java.io.Serializable {
 	private Integer type;
 	private String url;
 	private Timestamp creDate;
+	private Timestamp refresh;
+	private Integer state;
 	private Set<Dynamic> dynamics = new HashSet<Dynamic>(0);
 
 	// Constructors
@@ -49,13 +51,16 @@ public class File implements java.io.Serializable {
 
 	/** full constructor */
 	public File(Folder folder, User user, String name, Integer type,
-			String url, Timestamp creDate, Set<Dynamic> dynamics) {
+			String url, Timestamp creDate, Timestamp refresh, Integer state,
+			Set<Dynamic> dynamics) {
 		this.folder = folder;
 		this.user = user;
 		this.name = name;
 		this.type = type;
 		this.url = url;
 		this.creDate = creDate;
+		this.refresh = refresh;
+		this.state = state;
 		this.dynamics = dynamics;
 	}
 
@@ -71,7 +76,7 @@ public class File implements java.io.Serializable {
 		this.filId = filId;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "fol_id")
 	public Folder getFolder() {
 		return this.folder;
@@ -81,7 +86,7 @@ public class File implements java.io.Serializable {
 		this.folder = folder;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "use_id", nullable = false)
 	public User getUser() {
 		return this.user;
@@ -127,7 +132,25 @@ public class File implements java.io.Serializable {
 		this.creDate = creDate;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "file")
+	@Column(name = "refresh", length = 19)
+	public Timestamp getRefresh() {
+		return this.refresh;
+	}
+
+	public void setRefresh(Timestamp refresh) {
+		this.refresh = refresh;
+	}
+
+	@Column(name = "state")
+	public Integer getState() {
+		return this.state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "file")
 	public Set<Dynamic> getDynamics() {
 		return this.dynamics;
 	}

@@ -7,9 +7,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.smapley.bean.Task;
+import com.smapley.bean.TaskDAO;
 import com.smapley.bean.User;
-import com.smapley.dao.TaskDAO;
-import com.smapley.dao.UserDAO;
+import com.smapley.bean.UserDAO;
 
 public class Test {
 

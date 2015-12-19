@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.ProUse;
 import com.smapley.bean.User;
-import com.smapley.mode.ProjectEntity;
+import com.smapley.entity.ProjectEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 

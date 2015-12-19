@@ -15,10 +15,9 @@ import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Project;
+import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.Task;
 import com.smapley.bean.User;
-import com.smapley.dao.ProjectDAO;
-import com.smapley.mode.OtherTaskEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 
@@ -72,16 +71,16 @@ public class OtherTaskList extends HttpServlet {
 			if (session != null) {
 				User user = (User) session.getAttribute(
 						"user");
-				List<OtherTaskEntity> listTask = new ArrayList<OtherTaskEntity>();
-				Project project = projectDAO.findById(Integer.parseInt(pro_id));
-				for (Task task : (Set<Task>) project.getTasks()) {
-					OtherTaskEntity otherTaskEntity = new OtherTaskEntity(task);
-					listTask.add(otherTaskEntity);
-				}
+//				List<OtherTaskEntity> listTask = new ArrayList<OtherTaskEntity>();
+//				Project project = projectDAO.findById(Integer.parseInt(pro_id));
+//				for (Task task : (Set<Task>) project.getTasks()) {
+//					OtherTaskEntity otherTaskEntity = new OtherTaskEntity(task);
+//					listTask.add(otherTaskEntity);
+//				}
 				// 返回数据
-				result.flag = MyData.SUCC;
-				result.details = "";
-				result.data = JSON.toJSONString(listTask);
+//				result.flag = MyData.SUCC;
+//				result.details = "";
+//				result.data = JSON.toJSONString(listTask);
 
 			} else {
 				result.flag = MyData.OutLogin;

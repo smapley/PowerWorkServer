@@ -1,6 +1,7 @@
 package com.smapley.bean;
 
 import java.sql.Time;
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,6 +27,8 @@ public class NoteDetails implements java.io.Serializable {
 	private String text;
 	private String path;
 	private Time length;
+	private Timestamp refresh;
+	private Integer state;
 
 	// Constructors
 
@@ -35,12 +38,14 @@ public class NoteDetails implements java.io.Serializable {
 
 	/** full constructor */
 	public NoteDetails(Note note, Integer type, String text, String path,
-			Time length) {
+			Time length, Timestamp refresh, Integer state) {
 		this.note = note;
 		this.type = type;
 		this.text = text;
 		this.path = path;
 		this.length = length;
+		this.refresh = refresh;
+		this.state = state;
 	}
 
 	// Property accessors
@@ -55,7 +60,7 @@ public class NoteDetails implements java.io.Serializable {
 		this.detId = detId;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "not_id")
 	public Note getNote() {
 		return this.note;
@@ -99,6 +104,24 @@ public class NoteDetails implements java.io.Serializable {
 
 	public void setLength(Time length) {
 		this.length = length;
+	}
+
+	@Column(name = "refresh", length = 19)
+	public Timestamp getRefresh() {
+		return this.refresh;
+	}
+
+	public void setRefresh(Timestamp refresh) {
+		this.refresh = refresh;
+	}
+
+	@Column(name = "state")
+	public Integer getState() {
+		return this.state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 }

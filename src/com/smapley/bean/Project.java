@@ -26,6 +26,8 @@ public class Project implements java.io.Serializable {
 	private String name;
 	private String picUrl;
 	private Timestamp creDate;
+	private Timestamp refresh;
+	private Integer state;
 	private Set<Task> tasks = new HashSet<Task>(0);
 	private Set<Folder> folders = new HashSet<Folder>(0);
 	private Set<ProUse> proUses = new HashSet<ProUse>(0);
@@ -39,11 +41,13 @@ public class Project implements java.io.Serializable {
 
 	/** full constructor */
 	public Project(String name, String picUrl, Timestamp creDate,
-			Set<Task> tasks, Set<Folder> folders, Set<ProUse> proUses,
-			Set<Dynamic> dynamics) {
+			Timestamp refresh, Integer state, Set<Task> tasks,
+			Set<Folder> folders, Set<ProUse> proUses, Set<Dynamic> dynamics) {
 		this.name = name;
 		this.picUrl = picUrl;
 		this.creDate = creDate;
+		this.refresh = refresh;
+		this.state = state;
 		this.tasks = tasks;
 		this.folders = folders;
 		this.proUses = proUses;
@@ -87,6 +91,24 @@ public class Project implements java.io.Serializable {
 
 	public void setCreDate(Timestamp creDate) {
 		this.creDate = creDate;
+	}
+
+	@Column(name = "refresh", length = 19)
+	public Timestamp getRefresh() {
+		return this.refresh;
+	}
+
+	public void setRefresh(Timestamp refresh) {
+		this.refresh = refresh;
+	}
+
+	@Column(name = "state")
+	public Integer getState() {
+		return this.state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "project")

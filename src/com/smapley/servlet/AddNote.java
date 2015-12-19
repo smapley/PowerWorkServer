@@ -22,10 +22,11 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Note;
+import com.smapley.bean.NoteDAO;
 import com.smapley.bean.NoteDetails;
+import com.smapley.bean.NoteDetailsDAO;
 import com.smapley.bean.User;
-import com.smapley.dao.NoteDAO;
-import com.smapley.dao.NoteDetailsDAO;
+import com.smapley.mode.NoteMode;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 
@@ -104,79 +105,85 @@ public class AddNote extends HttpServlet {
 
 			HttpSession session = request.getSession(false);
 			if (session != null) {
-				User user = (User) session.getAttribute(
-						"user");
-					// 添加note
-					Note note = new Note();
-					note.setName(map.get("name").getString("utf-8"));
-					note.setUser(user);
-					note.setAlarm(new Timestamp(Long.parseLong(map.get("alarm")
-							.getString("utf-8"))));
-					note.setCreDate(new Timestamp(System.currentTimeMillis()));
-					noteDAO.save(note);
-					note = (Note) noteDAO.findByExample(note).get(0);
-					for (int i = 0; i < Integer.parseInt(map.get("size")
-							.getString("utf-8")); i++) {
-						NoteDetails noteDetails = new NoteDetails();
-						noteDetails.setNote(note);
-						int type = Integer.parseInt(map.get("type" + i)
-								.getString("utf-8"));
-						noteDetails.setType(type);
-						switch (type) {
-						case 5:
+				User user = (User) session.getAttribute("user");
+				// 添加note
+				Note note = new Note();
+				note.setName(map.get("name").getString("utf-8"));
+				note.setUser(user);
+				note.setAlarm(new Timestamp(Long.parseLong(map.get("alarm")
+						.getString("utf-8"))));
+				note.setCreDate(new Timestamp(System.currentTimeMillis()));
+				note.setRefresh(new Timestamp(System.currentTimeMillis()));
+				note.setState(0);
+				noteDAO.save(note);
+				for (int i = 0; i < Integer.parseInt(map.get("size").getString(
+						"utf-8")); i++) {
+					NoteDetails noteDetails = new NoteDetails();
+					noteDetails.setNote(note);
+					int type = Integer.parseInt(map.get("type" + i).getString(
+							"utf-8"));
+					noteDetails.setType(type);
+					noteDetails.setRefresh(new Timestamp(System
+							.currentTimeMillis()));
+					noteDetails.setState(0);
+					switch (type) {
+					case 5:
+						if (map.get("text" + i) != null)
 							noteDetails.setText(map.get("text" + i).getString(
 									"utf-8"));
-							break;
-						case 4:
-							FileItem item = map.get("file" + i);
-							/**
-							 * 以下三步，主要获取 上传文件的名字
-							 */
-							// 获取路径名
-							String value = item.getName();
-							// 索引到最后一个反斜杠
-							int start = value.lastIndexOf("\\");
-							// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
-							String filename = value.substring(start + 1);
-							filename = user.getUseId() + "_"
-									+ System.currentTimeMillis() + "."
-									+ filename.split("\\.")[1];
-							// 真正写到磁盘上
-							// 它抛出的异常 用exception 捕捉
-							item.write(new File(voiceFile, filename));// 第三方提供的
-							noteDetails.setPath("voice/" + filename);
-							noteDetails.setLength(new Time(Long.parseLong(map
-									.get("length" + i).getString())));
-							break;
+						break;
+					case 4:
+						FileItem item = map.get("file" + i);
+						/**
+						 * 以下三步，主要获取 上传文件的名字
+						 */
+						// 获取路径名
+						String value = item.getName();
+						// 索引到最后一个反斜杠
+						int start = value.lastIndexOf("\\");
+						// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
+						String filename = value.substring(start + 1);
+						filename = user.getUseId() + "_"
+								+ System.currentTimeMillis() + "."
+								+ filename.split("\\.")[1];
+						// 真正写到磁盘上
+						// 它抛出的异常 用exception 捕捉
+						item.write(new File(voiceFile, filename));// 第三方提供的
+						noteDetails.setPath("voice/" + filename);
+						noteDetails.setLength(new Time(Long.parseLong(map.get(
+								"length" + i).getString())));
+						break;
 
-						case 3:
-							FileItem item1 = map.get("file" + i);
-							/**
-							 * 以下三步，主要获取 上传文件的名字
-							 */
-							// 获取路径名
-							String value1 = item1.getName();
-							// 索引到最后一个反斜杠
-							int start1 = value1.lastIndexOf("\\");
-							// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
-							String filename1 = value1.substring(start1 + 1);
-							filename1 = user.getUseId() + "_"
-									+ System.currentTimeMillis() + "."
-									+ filename1.split("\\.")[1];
-							// 真正写到磁盘上
-							// 它抛出的异常 用exception 捕捉
-							item1.write(new File(picPath, filename1));// 第三方提供的
-							noteDetails.setPath("pic/" + filename1);
-							break;
-						}
-						noteDetailsDAO.save(noteDetails);
+					case 3:
+						FileItem item1 = map.get("file" + i);
+						/**
+						 * 以下三步，主要获取 上传文件的名字
+						 */
+						// 获取路径名
+						String value1 = item1.getName();
+						// 索引到最后一个反斜杠
+						int start1 = value1.lastIndexOf("\\");
+						// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
+						String filename1 = value1.substring(start1 + 1);
+						filename1 = user.getUseId() + "_"
+								+ System.currentTimeMillis() + "."
+								+ filename1.split("\\.")[1];
+						// 真正写到磁盘上
+						// 它抛出的异常 用exception 捕捉
+						item1.write(new File(picPath, filename1));// 第三方提供的
+						noteDetails.setPath("pic/" + filename1);
+						break;
 					}
-					result.flag = MyData.SUCC;
-					result.details = "";
-				} else {
-					result.flag = MyData.OutLogin;
-					result.details = MyData.ERR_OutLogin;
+					noteDetailsDAO.save(noteDetails);
 				}
+				note = noteDAO.findByExample(note).get(0);
+				result.flag = MyData.SUCC;
+				result.details = "";
+				result.data = JSON.toJSONString(new NoteMode(note, 0));
+			} else {
+				result.flag = MyData.OutLogin;
+				result.details = MyData.ERR_OutLogin;
+			}
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -184,8 +191,8 @@ public class AddNote extends HttpServlet {
 			result.details = MyData.ERR_UpLoadFail;
 		}
 
-		System.out.println("---AddNote--result--" + result.flag + "--" + result.details
-				+ "--" + result.data);
+		System.out.println("---AddNote--result--" + result.flag + "--"
+				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();
 		out.close();

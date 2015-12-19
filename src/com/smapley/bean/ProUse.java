@@ -1,5 +1,6 @@
 package com.smapley.bean;
 
+import java.sql.Timestamp;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -23,6 +24,8 @@ public class ProUse implements java.io.Serializable {
 	private Project project;
 	private User user;
 	private Integer rank;
+	private Timestamp refresh;
+	private Integer state;
 
 	// Constructors
 
@@ -30,12 +33,23 @@ public class ProUse implements java.io.Serializable {
 	public ProUse() {
 	}
 
-	/** full constructor */
+	/** minimal constructor */
 	public ProUse(ProUseId id, Project project, User user, Integer rank) {
 		this.id = id;
 		this.project = project;
 		this.user = user;
 		this.rank = rank;
+	}
+
+	/** full constructor */
+	public ProUse(ProUseId id, Project project, User user, Integer rank,
+			Timestamp refresh, Integer state) {
+		this.id = id;
+		this.project = project;
+		this.user = user;
+		this.rank = rank;
+		this.refresh = refresh;
+		this.state = state;
 	}
 
 	// Property accessors
@@ -78,6 +92,24 @@ public class ProUse implements java.io.Serializable {
 
 	public void setRank(Integer rank) {
 		this.rank = rank;
+	}
+
+	@Column(name = "refresh", length = 19)
+	public Timestamp getRefresh() {
+		return this.refresh;
+	}
+
+	public void setRefresh(Timestamp refresh) {
+		this.refresh = refresh;
+	}
+
+	@Column(name = "state")
+	public Integer getState() {
+		return this.state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 }

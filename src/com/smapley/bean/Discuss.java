@@ -1,5 +1,6 @@
 package com.smapley.bean;
 
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,6 +24,8 @@ public class Discuss implements java.io.Serializable {
 	private Dynamic dynamic;
 	private User user;
 	private String details;
+	private Timestamp refresh;
+	private Integer state;
 
 	// Constructors
 
@@ -31,10 +34,13 @@ public class Discuss implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public Discuss(Dynamic dynamic, User user, String details) {
+	public Discuss(Dynamic dynamic, User user, String details,
+			Timestamp refresh, Integer state) {
 		this.dynamic = dynamic;
 		this.user = user;
 		this.details = details;
+		this.refresh = refresh;
+		this.state = state;
 	}
 
 	// Property accessors
@@ -49,7 +55,7 @@ public class Discuss implements java.io.Serializable {
 		this.disId = disId;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dyn_id")
 	public Dynamic getDynamic() {
 		return this.dynamic;
@@ -59,7 +65,7 @@ public class Discuss implements java.io.Serializable {
 		this.dynamic = dynamic;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "use_id")
 	public User getUser() {
 		return this.user;
@@ -76,6 +82,24 @@ public class Discuss implements java.io.Serializable {
 
 	public void setDetails(String details) {
 		this.details = details;
+	}
+
+	@Column(name = "refresh", length = 19)
+	public Timestamp getRefresh() {
+		return this.refresh;
+	}
+
+	public void setRefresh(Timestamp refresh) {
+		this.refresh = refresh;
+	}
+
+	@Column(name = "state")
+	public Integer getState() {
+		return this.state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 }

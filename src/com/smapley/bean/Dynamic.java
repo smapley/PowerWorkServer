@@ -32,6 +32,8 @@ public class Dynamic implements java.io.Serializable {
 	private Timestamp creDate;
 	private Integer type;
 	private String picUrl;
+	private Timestamp refresh;
+	private Integer state;
 	private Set<Praise> praises = new HashSet<Praise>(0);
 	private Set<Discuss> discusses = new HashSet<Discuss>(0);
 
@@ -43,8 +45,8 @@ public class Dynamic implements java.io.Serializable {
 
 	/** full constructor */
 	public Dynamic(Project project, User user, Task task, File file,
-			Timestamp creDate, Integer type, String picUrl,
-			Set<Praise> praises, Set<Discuss> discusses) {
+			Timestamp creDate, Integer type, String picUrl, Timestamp refresh,
+			Integer state, Set<Praise> praises, Set<Discuss> discusses) {
 		this.project = project;
 		this.user = user;
 		this.task = task;
@@ -52,6 +54,8 @@ public class Dynamic implements java.io.Serializable {
 		this.creDate = creDate;
 		this.type = type;
 		this.picUrl = picUrl;
+		this.refresh = refresh;
+		this.state = state;
 		this.praises = praises;
 		this.discusses = discusses;
 	}
@@ -68,7 +72,7 @@ public class Dynamic implements java.io.Serializable {
 		this.dynId = dynId;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "pro_id")
 	public Project getProject() {
 		return this.project;
@@ -78,7 +82,7 @@ public class Dynamic implements java.io.Serializable {
 		this.project = project;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "use_id")
 	public User getUser() {
 		return this.user;
@@ -88,7 +92,7 @@ public class Dynamic implements java.io.Serializable {
 		this.user = user;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tas_id")
 	public Task getTask() {
 		return this.task;
@@ -98,7 +102,7 @@ public class Dynamic implements java.io.Serializable {
 		this.task = task;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "fil_id")
 	public File getFile() {
 		return this.file;
@@ -133,6 +137,24 @@ public class Dynamic implements java.io.Serializable {
 
 	public void setPicUrl(String picUrl) {
 		this.picUrl = picUrl;
+	}
+
+	@Column(name = "refresh", length = 19)
+	public Timestamp getRefresh() {
+		return this.refresh;
+	}
+
+	public void setRefresh(Timestamp refresh) {
+		this.refresh = refresh;
+	}
+
+	@Column(name = "state")
+	public Integer getState() {
+		return this.state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "dynamic")

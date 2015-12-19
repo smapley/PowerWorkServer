@@ -1,5 +1,6 @@
 package com.smapley.bean;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -28,6 +29,8 @@ public class Folder implements java.io.Serializable {
 	private Folder folder;
 	private User user;
 	private String name;
+	private Timestamp refresh;
+	private Integer state;
 	private Set<Folder> folders = new HashSet<Folder>(0);
 	private Set<File> files = new HashSet<File>(0);
 
@@ -44,11 +47,14 @@ public class Folder implements java.io.Serializable {
 
 	/** full constructor */
 	public Folder(Project project, Folder folder, User user, String name,
-			Set<Folder> folders, Set<File> files) {
+			Timestamp refresh, Integer state, Set<Folder> folders,
+			Set<File> files) {
 		this.project = project;
 		this.folder = folder;
 		this.user = user;
 		this.name = name;
+		this.refresh = refresh;
+		this.state = state;
 		this.folders = folders;
 		this.files = files;
 	}
@@ -65,7 +71,7 @@ public class Folder implements java.io.Serializable {
 		this.folId = folId;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "pro_id")
 	public Project getProject() {
 		return this.project;
@@ -75,7 +81,7 @@ public class Folder implements java.io.Serializable {
 		this.project = project;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "fol_id2")
 	public Folder getFolder() {
 		return this.folder;
@@ -85,7 +91,7 @@ public class Folder implements java.io.Serializable {
 		this.folder = folder;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "use_id")
 	public User getUser() {
 		return this.user;
@@ -104,7 +110,25 @@ public class Folder implements java.io.Serializable {
 		this.name = name;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "folder")
+	@Column(name = "refresh", length = 19)
+	public Timestamp getRefresh() {
+		return this.refresh;
+	}
+
+	public void setRefresh(Timestamp refresh) {
+		this.refresh = refresh;
+	}
+
+	@Column(name = "state")
+	public Integer getState() {
+		return this.state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "folder")
 	public Set<Folder> getFolders() {
 		return this.folders;
 	}

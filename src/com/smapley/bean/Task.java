@@ -32,6 +32,8 @@ public class Task implements java.io.Serializable {
 	private Integer progress;
 	private Integer priority;
 	private Timestamp creDate;
+	private Timestamp refresh;
+	private Integer state;
 	private Set<TaskDetails> taskDetailses = new HashSet<TaskDetails>(0);
 	private Set<TasUse> tasUses = new HashSet<TasUse>(0);
 	private Set<Dynamic> dynamics = new HashSet<Dynamic>(0);
@@ -50,8 +52,9 @@ public class Task implements java.io.Serializable {
 	/** full constructor */
 	public Task(Project project, String name, Timestamp staDate,
 			Timestamp endDate, Integer progress, Integer priority,
-			Timestamp creDate, Set<TaskDetails> taskDetailses,
-			Set<TasUse> tasUses, Set<Dynamic> dynamics) {
+			Timestamp creDate, Timestamp refresh, Integer state,
+			Set<TaskDetails> taskDetailses, Set<TasUse> tasUses,
+			Set<Dynamic> dynamics) {
 		this.project = project;
 		this.name = name;
 		this.staDate = staDate;
@@ -59,6 +62,8 @@ public class Task implements java.io.Serializable {
 		this.progress = progress;
 		this.priority = priority;
 		this.creDate = creDate;
+		this.refresh = refresh;
+		this.state = state;
 		this.taskDetailses = taskDetailses;
 		this.tasUses = tasUses;
 		this.dynamics = dynamics;
@@ -76,7 +81,7 @@ public class Task implements java.io.Serializable {
 		this.tasId = tasId;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "pro_id", nullable = false)
 	public Project getProject() {
 		return this.project;
@@ -140,6 +145,24 @@ public class Task implements java.io.Serializable {
 		this.creDate = creDate;
 	}
 
+	@Column(name = "refresh", length = 19)
+	public Timestamp getRefresh() {
+		return this.refresh;
+	}
+
+	public void setRefresh(Timestamp refresh) {
+		this.refresh = refresh;
+	}
+
+	@Column(name = "state")
+	public Integer getState() {
+		return this.state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "task")
 	public Set<TaskDetails> getTaskDetailses() {
 		return this.taskDetailses;
@@ -158,7 +181,7 @@ public class Task implements java.io.Serializable {
 		this.tasUses = tasUses;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "task")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "task")
 	public Set<Dynamic> getDynamics() {
 		return this.dynamics;
 	}

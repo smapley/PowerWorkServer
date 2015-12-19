@@ -22,13 +22,13 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Dynamic;
+import com.smapley.bean.DynamicDAO;
+import com.smapley.bean.FileDAO;
 import com.smapley.bean.Folder;
+import com.smapley.bean.FolderDAO;
+import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
-import com.smapley.dao.DynamicDAO;
-import com.smapley.dao.FileDAO;
-import com.smapley.dao.FolderDAO;
-import com.smapley.dao.ProjectDAO;
-import com.smapley.mode.FileEntity;
+import com.smapley.entity.FileEntity;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 

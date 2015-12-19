@@ -24,6 +24,8 @@ public class Feedbacks implements java.io.Serializable {
 	private User user;
 	private String details;
 	private Timestamp creDate;
+	private Timestamp refresh;
+	private Integer state;
 
 	// Constructors
 
@@ -38,10 +40,13 @@ public class Feedbacks implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public Feedbacks(User user, String details, Timestamp creDate) {
+	public Feedbacks(User user, String details, Timestamp creDate,
+			Timestamp refresh, Integer state) {
 		this.user = user;
 		this.details = details;
 		this.creDate = creDate;
+		this.refresh = refresh;
+		this.state = state;
 	}
 
 	// Property accessors
@@ -56,7 +61,7 @@ public class Feedbacks implements java.io.Serializable {
 		this.feeId = feeId;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "use_id", nullable = false)
 	public User getUser() {
 		return this.user;
@@ -82,6 +87,24 @@ public class Feedbacks implements java.io.Serializable {
 
 	public void setCreDate(Timestamp creDate) {
 		this.creDate = creDate;
+	}
+
+	@Column(name = "refresh", length = 19)
+	public Timestamp getRefresh() {
+		return this.refresh;
+	}
+
+	public void setRefresh(Timestamp refresh) {
+		this.refresh = refresh;
+	}
+
+	@Column(name = "state")
+	public Integer getState() {
+		return this.state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 }

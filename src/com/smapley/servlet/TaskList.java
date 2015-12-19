@@ -13,10 +13,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
+import com.smapley.bean.ProUse;
+import com.smapley.bean.ProUseDAO;
+import com.smapley.bean.ProUseId;
 import com.smapley.bean.TasUse;
 import com.smapley.bean.User;
+import com.smapley.bean.UserBase;
+import com.smapley.bean.UserDAO;
+import com.smapley.entity.TaskEntity;
 import com.smapley.mode.Result;
-import com.smapley.mode.TaskEntity;
 import com.smapley.utils.MyData;
 
 /**
@@ -25,6 +30,9 @@ import com.smapley.utils.MyData;
 @WebServlet("/TaskList")
 public class TaskList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private UserDAO userDAO = UserDAO
+			.getFromApplicationContext(MyData.getCXT());
+	private ProUseDAO proUseDAO=ProUseDAO.getFromApplicationContext(MyData.getCXT());
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -63,12 +71,12 @@ public class TaskList extends HttpServlet {
 
 			HttpSession session = request.getSession(false);
 			if (session != null) {
-				User user = (User) session.getAttribute(
-						"user");
+				UserBase userBase = (UserBase) session.getAttribute("userBase");
+				ProUseId proUseId=new ProUseId(userBase.getUseId(), null);
+				User user=userDAO.findById(userBase.getUseId());
 				List<TaskEntity> listTask = new ArrayList<TaskEntity>();
 				for (TasUse tasUse : user.getTasUses()) {
-					TaskEntity taskEntity = new TaskEntity(tasUse);
-					listTask.add(taskEntity);
+//						listTask.add(new TaskEntity(tasUse));
 				}
 				// 返回数据
 				result.flag = MyData.SUCC;

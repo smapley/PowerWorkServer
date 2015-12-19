@@ -1,5 +1,6 @@
 package com.smapley.bean;
 
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,6 +23,8 @@ public class Praise implements java.io.Serializable {
 	private Integer praId;
 	private Dynamic dynamic;
 	private User user;
+	private Timestamp refresh;
+	private Integer state;
 
 	// Constructors
 
@@ -30,9 +33,11 @@ public class Praise implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public Praise(Dynamic dynamic, User user) {
+	public Praise(Dynamic dynamic, User user, Timestamp refresh, Integer state) {
 		this.dynamic = dynamic;
 		this.user = user;
+		this.refresh = refresh;
+		this.state = state;
 	}
 
 	// Property accessors
@@ -47,7 +52,7 @@ public class Praise implements java.io.Serializable {
 		this.praId = praId;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dyn_id")
 	public Dynamic getDynamic() {
 		return this.dynamic;
@@ -57,7 +62,7 @@ public class Praise implements java.io.Serializable {
 		this.dynamic = dynamic;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "use_id")
 	public User getUser() {
 		return this.user;
@@ -65,6 +70,24 @@ public class Praise implements java.io.Serializable {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	@Column(name = "refresh", length = 19)
+	public Timestamp getRefresh() {
+		return this.refresh;
+	}
+
+	public void setRefresh(Timestamp refresh) {
+		this.refresh = refresh;
+	}
+
+	@Column(name = "state")
+	public Integer getState() {
+		return this.state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 }

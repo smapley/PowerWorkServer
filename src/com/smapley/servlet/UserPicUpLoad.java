@@ -20,9 +20,9 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.User;
-import com.smapley.dao.UserDAO;
+import com.smapley.bean.UserDAO;
+import com.smapley.entity.UserEntity;
 import com.smapley.mode.Result;
-import com.smapley.mode.UserEntity;
 import com.smapley.utils.Code;
 import com.smapley.utils.MyData;
 
@@ -126,9 +126,6 @@ public class UserPicUpLoad extends HttpServlet {
 						user.setPicUrl("user_pic/" + filename);
 						userDAO.merge(user);
 						request.getSession().setAttribute("user", user);
-						// 加密密码并返回数据
-						user.setPassword(Code.enCode(user.getPassword(), user
-								.getCreDate().toString()));
 
 					}
 				}

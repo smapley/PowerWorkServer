@@ -61,72 +61,77 @@
 	
 
 
-	<bean id="DiscussDAO" class="com.smapley.dao.DiscussDAO">
+	<bean id="DiscussDAO" class="com.smapley.bean.DiscussDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="PraiseDAO" class="com.smapley.dao.PraiseDAO">
+	<bean id="PraiseDAO" class="com.smapley.bean.PraiseDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="FolderDAO" class="com.smapley.dao.FolderDAO">
+	<bean id="FolderDAO" class="com.smapley.bean.FolderDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="FeedbacksDAO" class="com.smapley.dao.FeedbacksDAO">
+	<bean id="FeedbacksDAO" class="com.smapley.bean.FeedbacksDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="FileDAO" class="com.smapley.dao.FileDAO">
+	<bean id="FileDAO" class="com.smapley.bean.FileDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="NoteDAO" class="com.smapley.dao.NoteDAO">
+	<bean id="NoteDAO" class="com.smapley.bean.NoteDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="DynamicDAO" class="com.smapley.dao.DynamicDAO">
+	<bean id="DynamicDAO" class="com.smapley.bean.DynamicDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="NoteDetailsDAO" class="com.smapley.dao.NoteDetailsDAO">
+	<bean id="NoteDetailsDAO" class="com.smapley.bean.NoteDetailsDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="TaskDetailsDAO" class="com.smapley.dao.TaskDetailsDAO">
+	<bean id="TaskDetailsDAO" class="com.smapley.bean.TaskDetailsDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="TasUseDAO" class="com.smapley.dao.TasUseDAO">
+	<bean id="TasUseDAO" class="com.smapley.bean.TasUseDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="TaskDAO" class="com.smapley.dao.TaskDAO">
+	<bean id="TaskDAO" class="com.smapley.bean.TaskDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="ProjectDAO" class="com.smapley.dao.ProjectDAO">
+	<bean id="ProjectDAO" class="com.smapley.bean.ProjectDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="ProUseDAO" class="com.smapley.dao.ProUseDAO">
+	<bean id="ProUseDAO" class="com.smapley.bean.ProUseDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
-	<bean id="UserDAO" class="com.smapley.dao.UserDAO">
+	<bean id="UserDAO" class="com.smapley.bean.UserDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="UserBaseDAO" class="com.smapley.bean.UserBaseDAO">
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>

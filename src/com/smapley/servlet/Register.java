@@ -10,12 +10,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.User;
-import com.smapley.dao.UserDAO;
+import com.smapley.bean.UserBase;
+import com.smapley.bean.UserBaseDAO;
+import com.smapley.bean.UserDAO;
+import com.smapley.entity.UserBaseEntity;
 import com.smapley.mode.Result;
-import com.smapley.mode.UserEntity;
 import com.smapley.utils.MyData;
 
 @WebServlet("/Register")
@@ -26,6 +29,8 @@ public class Register extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private UserBaseDAO userBaseDAO = UserBaseDAO
+			.getFromApplicationContext(MyData.getCXT());
 	private UserDAO userDAO = UserDAO
 			.getFromApplicationContext(MyData.getCXT());
 
@@ -60,21 +65,35 @@ public class Register extends HttpServlet {
 			System.out.println("--注册--" + username + "--" + password);
 
 			// 查询是否存在相同用户名
-			List<User> list = userDAO.findByUsername(username);
+			List<UserBase> list = userBaseDAO.findByUsername(username);
 			if (list.isEmpty()) {
-				// 不存在相同用户名，插入新用户
+				// 创建Session
+				HttpSession session = request.getSession();
+				// 保存UserBase
+				UserBase userBase = new UserBase();
+				userBase.setUsername(username);
+				userBase.setPassword(password);
+				userBase.setSkey(session.getId());
+				userBase.setRefresh(new Timestamp(System.currentTimeMillis()));
+				userBase.setState(0);
+				userBaseDAO.save(userBase);
+				// 添加UserBase
+				session.setAttribute("userBase", userBase);
+				// 保存User
 				User user = new User();
-				user.setUsername(username);
+				user.setUseId(userBase.getUseId());
 				user.setTruename(username);
-				user.setPassword(password);
 				user.setPhone(phone);
 				user.setCreDate(new Timestamp(System.currentTimeMillis()));
 				user.setBirthday(new Timestamp(System.currentTimeMillis()));
-				user = userDAO.merge(user);
-				System.out.println(user.getCreDate().toString());
-				result.data = JSON.toJSONString(new UserEntity(user));
-				result.details = "";
+				user.setRefresh(new Timestamp(System.currentTimeMillis()));
+				user.setState(0);
+				userDAO.save(user);
+				// 返回
 				result.flag = MyData.SUCC;
+				result.details = "";
+				result.data = JSON.toJSONString(new UserBaseEntity(userBase));
+
 			} else {
 				// 存在相同用户名
 				result.details = MyData.ERR_USERNAME;
@@ -83,8 +102,8 @@ public class Register extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--注册--result--" + result.flag + "--" + result.details
-				+ "--" + result.data);
+		System.out.println("--注册--result--" + result.flag + "--"
+				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();
 		out.close();

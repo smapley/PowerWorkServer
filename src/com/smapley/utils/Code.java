@@ -4,10 +4,10 @@ package com.smapley.utils;
 
 public class Code {
 
+	public static final String code="5D12F54S1F5D8DF1E215D4D5SD2D5F12DF45DF12";
 	
-	public static String enCode(String data,String code){
+	public static String enCode(String data){
 		String result="";
-		code+=code;
 		byte[] bytes1=data.getBytes();
 		byte[] bytes2=code.getBytes();
 		for (int i = 0; i < bytes1.length; i++) {
@@ -17,8 +17,7 @@ public class Code {
 		return result;
 	}
 	
-	public static String doCode(String data,String code){
-		code+=code;
+	public static String doCode(String data){
 		String[] datas=data.split(",");
 		byte[] bytes1=new byte[datas.length];
 		byte[] bytes2=code.getBytes();

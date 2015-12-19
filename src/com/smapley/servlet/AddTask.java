@@ -23,19 +23,20 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.smapley.bean.Dynamic;
+import com.smapley.bean.DynamicDAO;
 import com.smapley.bean.Project;
+import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.TasUse;
+import com.smapley.bean.TasUseDAO;
 import com.smapley.bean.TasUseId;
 import com.smapley.bean.Task;
+import com.smapley.bean.TaskDAO;
 import com.smapley.bean.TaskDetails;
+import com.smapley.bean.TaskDetailsDAO;
 import com.smapley.bean.User;
-import com.smapley.dao.DynamicDAO;
-import com.smapley.dao.ProjectDAO;
-import com.smapley.dao.TasUseDAO;
-import com.smapley.dao.TaskDAO;
-import com.smapley.dao.TaskDetailsDAO;
+import com.smapley.entity.TasUseEntity;
 import com.smapley.mode.Result;
-import com.smapley.mode.TasUseEntity;
+import com.smapley.mode.TaskMode;
 import com.smapley.utils.MyData;
 
 /**
@@ -205,9 +206,10 @@ public class AddTask extends HttpServlet {
 				dynamic.setTask(task);
 				dynamic.setType(1);
 				dynamicDao.save(dynamic);
-
+				task=taskDAO.findByExample(task).get(0);
 				result.flag = MyData.SUCC;
 				result.details = "";
+				result.data=JSON.toJSONString(new TaskMode(task, 0));
 			} else {
 				result.flag = MyData.OutLogin;
 				result.details = MyData.ERR_OutLogin;

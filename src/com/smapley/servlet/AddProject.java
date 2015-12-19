@@ -14,16 +14,16 @@ import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Dynamic;
+import com.smapley.bean.DynamicDAO;
 import com.smapley.bean.Folder;
+import com.smapley.bean.FolderDAO;
 import com.smapley.bean.ProUse;
+import com.smapley.bean.ProUseDAO;
 import com.smapley.bean.ProUseId;
 import com.smapley.bean.Project;
+import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
-import com.smapley.dao.DynamicDAO;
-import com.smapley.dao.FolderDAO;
-import com.smapley.dao.ProUseDAO;
-import com.smapley.dao.ProjectDAO;
-import com.smapley.mode.ProjectEntity;
+import com.smapley.mode.ProjectMode;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 
@@ -95,11 +95,15 @@ public class AddProject extends HttpServlet {
 					Project project = new Project();
 					project.setName(name);
 					project.setCreDate(new Timestamp(System.currentTimeMillis()));
+					project.setRefresh(new Timestamp(System.currentTimeMillis()));
+					project.setState(0);
 					projectDAO.save(project);
 					ProUse prouse = new ProUse();
 					prouse.setId(new ProUseId(user.getUseId(), project
 							.getProId()));
 					prouse.setRank(0);
+					prouse.setRefresh(new Timestamp(System.currentTimeMillis()));
+					prouse.setState(0);
 					proUseDAO.save(prouse);
 					Dynamic dynamic = new Dynamic();
 					dynamic.setUser(user);
@@ -107,28 +111,35 @@ public class AddProject extends HttpServlet {
 					dynamic.setType(0);
 					dynamic.setPicUrl(project.getPicUrl());
 					dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
+					dynamic.setRefresh(new Timestamp(System.currentTimeMillis()));
+					dynamic.setState(0);
 					dynamicDAO.save(dynamic);
 					Folder folder = new Folder();
 					folder.setProject(project);
 					folder.setUser(user);
 					folder.setName(name);
+					folder.setRefresh(new Timestamp(System.currentTimeMillis()));
+					folder.setState(0);
 					folderDAO.save(folder);
 					Folder folder1 = new Folder();
 					folder1.setFolder(folder);
 					folder1.setUser(user);
 					folder1.setName("图片");
+					folder1.setRefresh(new Timestamp(System.currentTimeMillis()));
+					folder1.setState(0);
 					folderDAO.save(folder1);
 					Folder folder2 = new Folder();
 					folder2.setFolder(folder);
 					folder2.setUser(user);
 					folder2.setName("声音");
+					folder2.setRefresh(new Timestamp(System.currentTimeMillis()));
+					folder2.setState(0);
 					folderDAO.save(folder2);
-					project = (Project) projectDAO.findByExample(project)
-							.get(0);
+					project=projectDAO.findByExample(project).get(0);
 					// 返回数据
 					result.flag = MyData.SUCC;
 					result.details = "";
-					result.data = JSON.toJSONString(new ProjectEntity(project));
+					result.data = JSON.toJSONString(new ProjectMode(project,0));
 				} else {
 					result.details = MyData.ERR_ProjectName;
 				}

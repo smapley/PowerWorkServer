@@ -13,8 +13,8 @@ import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Feedbacks;
+import com.smapley.bean.FeedbacksDAO;
 import com.smapley.bean.User;
-import com.smapley.dao.FeedbacksDAO;
 import com.smapley.mode.Result;
 import com.smapley.utils.MyData;
 

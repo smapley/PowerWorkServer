@@ -1,5 +1,6 @@
 package com.smapley.bean;
 
+import java.sql.Timestamp;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -22,6 +23,8 @@ public class TasUse implements java.io.Serializable {
 	private TasUseId id;
 	private User user;
 	private Task task;
+	private Timestamp refresh;
+	private Integer state;
 
 	// Constructors
 
@@ -29,11 +32,21 @@ public class TasUse implements java.io.Serializable {
 	public TasUse() {
 	}
 
-	/** full constructor */
+	/** minimal constructor */
 	public TasUse(TasUseId id, User user, Task task) {
 		this.id = id;
 		this.user = user;
 		this.task = task;
+	}
+
+	/** full constructor */
+	public TasUse(TasUseId id, User user, Task task, Timestamp refresh,
+			Integer state) {
+		this.id = id;
+		this.user = user;
+		this.task = task;
+		this.refresh = refresh;
+		this.state = state;
 	}
 
 	// Property accessors
@@ -60,7 +73,7 @@ public class TasUse implements java.io.Serializable {
 		this.user = user;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tas_id", nullable = false, insertable = false, updatable = false)
 	public Task getTask() {
 		return this.task;
@@ -68,6 +81,24 @@ public class TasUse implements java.io.Serializable {
 
 	public void setTask(Task task) {
 		this.task = task;
+	}
+
+	@Column(name = "refresh", length = 19)
+	public Timestamp getRefresh() {
+		return this.refresh;
+	}
+
+	public void setRefresh(Timestamp refresh) {
+		this.refresh = refresh;
+	}
+
+	@Column(name = "state")
+	public Integer getState() {
+		return this.state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 }
