@@ -137,7 +137,7 @@ public class Folder implements java.io.Serializable {
 		this.folders = folders;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "folder")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "folder")
 	public Set<File> getFiles() {
 		return this.files;
 	}

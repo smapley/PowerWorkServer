@@ -32,6 +32,8 @@ public class User implements java.io.Serializable {
 	private Timestamp creDate;
 	private Timestamp refresh;
 	private Integer state;
+	private Set<Message> messagesForUseId = new HashSet<Message>(0);
+	private Set<Message> messagesForSrcUseId = new HashSet<Message>(0);
 	private Set<ProUse> proUses = new HashSet<ProUse>(0);
 	private Set<TasUse> tasUses = new HashSet<TasUse>(0);
 	private Set<Note> notes = new HashSet<Note>(0);
@@ -58,6 +60,7 @@ public class User implements java.io.Serializable {
 	public User(Integer useId, UserBase userBase, String nickname,
 			String truename, String picUrl, String phone, Timestamp birthday,
 			Timestamp creDate, Timestamp refresh, Integer state,
+			Set<Message> messagesForUseId, Set<Message> messagesForSrcUseId,
 			Set<ProUse> proUses, Set<TasUse> tasUses, Set<Note> notes,
 			Set<Folder> folders, Set<Praise> praises,
 			Set<Feedbacks> feedbackses, Set<File> files,
@@ -72,6 +75,8 @@ public class User implements java.io.Serializable {
 		this.creDate = creDate;
 		this.refresh = refresh;
 		this.state = state;
+		this.messagesForUseId = messagesForUseId;
+		this.messagesForSrcUseId = messagesForSrcUseId;
 		this.proUses = proUses;
 		this.tasUses = tasUses;
 		this.notes = notes;
@@ -176,7 +181,25 @@ public class User implements java.io.Serializable {
 		this.state = state;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "userByUseId")
+	public Set<Message> getMessagesForUseId() {
+		return this.messagesForUseId;
+	}
+
+	public void setMessagesForUseId(Set<Message> messagesForUseId) {
+		this.messagesForUseId = messagesForUseId;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "userBySrcUseId")
+	public Set<Message> getMessagesForSrcUseId() {
+		return this.messagesForSrcUseId;
+	}
+
+	public void setMessagesForSrcUseId(Set<Message> messagesForSrcUseId) {
+		this.messagesForSrcUseId = messagesForSrcUseId;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
 	public Set<ProUse> getProUses() {
 		return this.proUses;
 	}
@@ -185,7 +208,7 @@ public class User implements java.io.Serializable {
 		this.proUses = proUses;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
 	public Set<TasUse> getTasUses() {
 		return this.tasUses;
 	}
@@ -194,7 +217,7 @@ public class User implements java.io.Serializable {
 		this.tasUses = tasUses;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
 	public Set<Note> getNotes() {
 		return this.notes;
 	}

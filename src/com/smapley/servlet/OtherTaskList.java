@@ -18,7 +18,7 @@ import com.smapley.bean.Project;
 import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.Task;
 import com.smapley.bean.User;
-import com.smapley.mode.Result;
+import com.smapley.db.modes.Result;
 import com.smapley.utils.MyData;
 
 /**

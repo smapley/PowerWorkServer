@@ -18,8 +18,8 @@ import com.smapley.bean.Folder;
 import com.smapley.bean.Project;
 import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
-import com.smapley.entity.FolderEntity;
-import com.smapley.mode.Result;
+import com.smapley.db.entity.FolderEntity;
+import com.smapley.db.modes.Result;
 import com.smapley.utils.MyData;
 
 /**

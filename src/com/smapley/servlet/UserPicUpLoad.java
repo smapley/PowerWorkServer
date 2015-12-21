@@ -3,6 +3,7 @@ package com.smapley.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
-import com.smapley.entity.UserEntity;
-import com.smapley.mode.Result;
-import com.smapley.utils.Code;
+import com.smapley.db.entity.UserEntity;
+import com.smapley.db.modes.Result;
 import com.smapley.utils.MyData;
 
 /**
@@ -40,7 +40,7 @@ import com.smapley.utils.MyData;
  */
 @WebServlet("/UserPicUpLoad")
 public class UserPicUpLoad extends HttpServlet {
-	
+
 	private UserDAO userDAO = UserDAO
 			.getFromApplicationContext(MyData.getCXT());
 	/**
@@ -50,7 +50,7 @@ public class UserPicUpLoad extends HttpServlet {
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+
 		// 设置编码
 		response.setContentType("text/html;charset=utf-8");
 		request.setCharacterEncoding("utf-8");
@@ -97,8 +97,7 @@ public class UserPicUpLoad extends HttpServlet {
 
 			HttpSession session = request.getSession(false);
 			if (session != null) {
-				User user = (User) session.getAttribute(
-						"user");
+				User user = (User) session.getAttribute("user");
 				for (FileItem item : list) {
 					if (!item.isFormField()) {
 						// 获取表单的属性名字
@@ -124,7 +123,9 @@ public class UserPicUpLoad extends HttpServlet {
 						item.write(new File(path, filename));// 第三方提供的
 
 						user.setPicUrl("user_pic/" + filename);
-						userDAO.merge(user);
+						user.setRefresh(new Timestamp(System
+								.currentTimeMillis()));
+						userDAO.attachDirty(user);
 						request.getSession().setAttribute("user", user);
 
 					}

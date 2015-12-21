@@ -66,7 +66,7 @@ public class ProUseDAO {
 		}
 	}
 
-	public ProUse findById(com.smapley.bean.ProUseId id) {
+	public ProUse findById(java.lang.Integer id) {
 		log.debug("getting ProUse instance with id: " + id);
 		try {
 			ProUse instance = (ProUse) getCurrentSession().get(

@@ -1,12 +1,12 @@
 package com.smapley.bean;
 
 import java.sql.Timestamp;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -20,9 +20,10 @@ public class TasUse implements java.io.Serializable {
 
 	// Fields
 
-	private TasUseId id;
+	private Integer id;
 	private User user;
 	private Task task;
+	private Integer rank;
 	private Timestamp refresh;
 	private Integer state;
 
@@ -33,38 +34,36 @@ public class TasUse implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public TasUse(TasUseId id, User user, Task task) {
-		this.id = id;
+	public TasUse(User user, Task task, Integer rank) {
 		this.user = user;
 		this.task = task;
+		this.rank = rank;
 	}
 
 	/** full constructor */
-	public TasUse(TasUseId id, User user, Task task, Timestamp refresh,
+	public TasUse(User user, Task task, Integer rank, Timestamp refresh,
 			Integer state) {
-		this.id = id;
 		this.user = user;
 		this.task = task;
+		this.rank = rank;
 		this.refresh = refresh;
 		this.state = state;
 	}
 
 	// Property accessors
-	@EmbeddedId
-	@AttributeOverrides({
-			@AttributeOverride(name = "tasId", column = @Column(name = "tas_id", nullable = false)),
-			@AttributeOverride(name = "useId", column = @Column(name = "use_id", nullable = false)),
-			@AttributeOverride(name = "rank", column = @Column(name = "rank", nullable = false)) })
-	public TasUseId getId() {
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "id", unique = true, nullable = false)
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(TasUseId id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "use_id", nullable = false, insertable = false, updatable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "use_id", nullable = false)
 	public User getUser() {
 		return this.user;
 	}
@@ -73,14 +72,23 @@ public class TasUse implements java.io.Serializable {
 		this.user = user;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "tas_id", nullable = false, insertable = false, updatable = false)
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "tas_id", nullable = false)
 	public Task getTask() {
 		return this.task;
 	}
 
 	public void setTask(Task task) {
 		this.task = task;
+	}
+
+	@Column(name = "rank", nullable = false)
+	public Integer getRank() {
+		return this.rank;
+	}
+
+	public void setRank(Integer rank) {
+		this.rank = rank;
 	}
 
 	@Column(name = "refresh", length = 19)

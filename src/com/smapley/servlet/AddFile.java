@@ -28,8 +28,8 @@ import com.smapley.bean.Folder;
 import com.smapley.bean.FolderDAO;
 import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
-import com.smapley.entity.FileEntity;
-import com.smapley.mode.Result;
+import com.smapley.db.entity.FileEntity;
+import com.smapley.db.modes.Result;
 import com.smapley.utils.MyData;
 
 /**
@@ -172,6 +172,8 @@ public class AddFile extends HttpServlet {
 						file.setUrl("voice/" + filename);
 						break;
 					}
+					file.setRefresh(new Timestamp(System.currentTimeMillis()));
+					file.setState(0);
 					fileDAO.save(file);
 					Dynamic dynamic = new Dynamic();
 					dynamic.setProject(projectDAO.findById(pro_id));
@@ -179,6 +181,8 @@ public class AddFile extends HttpServlet {
 					dynamic.setFile(file);
 					dynamic.setType(2);
 					dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
+					dynamic.setRefresh(new Timestamp(System.currentTimeMillis()));
+					dynamic.setState(0);
 					dynamicDAO.save(dynamic);
 					
 					listFile.add(new FileEntity(file));

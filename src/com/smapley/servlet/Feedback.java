@@ -15,7 +15,7 @@ import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Feedbacks;
 import com.smapley.bean.FeedbacksDAO;
 import com.smapley.bean.User;
-import com.smapley.mode.Result;
+import com.smapley.db.modes.Result;
 import com.smapley.utils.MyData;
 
 /**

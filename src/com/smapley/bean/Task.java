@@ -35,6 +35,7 @@ public class Task implements java.io.Serializable {
 	private Timestamp refresh;
 	private Integer state;
 	private Set<TaskDetails> taskDetailses = new HashSet<TaskDetails>(0);
+	private Set<Message> messages = new HashSet<Message>(0);
 	private Set<TasUse> tasUses = new HashSet<TasUse>(0);
 	private Set<Dynamic> dynamics = new HashSet<Dynamic>(0);
 
@@ -53,8 +54,8 @@ public class Task implements java.io.Serializable {
 	public Task(Project project, String name, Timestamp staDate,
 			Timestamp endDate, Integer progress, Integer priority,
 			Timestamp creDate, Timestamp refresh, Integer state,
-			Set<TaskDetails> taskDetailses, Set<TasUse> tasUses,
-			Set<Dynamic> dynamics) {
+			Set<TaskDetails> taskDetailses, Set<Message> messages,
+			Set<TasUse> tasUses, Set<Dynamic> dynamics) {
 		this.project = project;
 		this.name = name;
 		this.staDate = staDate;
@@ -65,6 +66,7 @@ public class Task implements java.io.Serializable {
 		this.refresh = refresh;
 		this.state = state;
 		this.taskDetailses = taskDetailses;
+		this.messages = messages;
 		this.tasUses = tasUses;
 		this.dynamics = dynamics;
 	}
@@ -163,7 +165,7 @@ public class Task implements java.io.Serializable {
 		this.state = state;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "task")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "task")
 	public Set<TaskDetails> getTaskDetailses() {
 		return this.taskDetailses;
 	}
@@ -172,7 +174,16 @@ public class Task implements java.io.Serializable {
 		this.taskDetailses = taskDetailses;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "task")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "task")
+	public Set<Message> getMessages() {
+		return this.messages;
+	}
+
+	public void setMessages(Set<Message> messages) {
+		this.messages = messages;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "task")
 	public Set<TasUse> getTasUses() {
 		return this.tasUses;
 	}

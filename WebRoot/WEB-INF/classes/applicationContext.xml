@@ -135,4 +135,9 @@
 		<property name="sessionFactory">
 			<ref bean="sessionFactory" />
 		</property>
+	</bean>
+	<bean id="MessageDAO" class="com.smapley.bean.MessageDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
 	</bean></beans>

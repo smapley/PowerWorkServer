@@ -2,6 +2,7 @@ package com.smapley.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,8 +15,8 @@ import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Folder;
 import com.smapley.bean.FolderDAO;
 import com.smapley.bean.User;
-import com.smapley.entity.FolderEntity;
-import com.smapley.mode.Result;
+import com.smapley.db.entity.FolderEntity;
+import com.smapley.db.modes.Result;
 import com.smapley.utils.MyData;
 
 /**
@@ -74,6 +75,8 @@ public class AddFolder extends HttpServlet {
 					folder.setName(name);
 					folder.setFolder(folder0);
 					folder.setUser(user);
+					folder.setRefresh(new Timestamp(System.currentTimeMillis()));
+					folder.setState(0);
 					folderDAO.save(folder);
 					// 返回数据
 					result.flag = MyData.SUCC;

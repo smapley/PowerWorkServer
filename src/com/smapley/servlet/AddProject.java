@@ -19,12 +19,11 @@ import com.smapley.bean.Folder;
 import com.smapley.bean.FolderDAO;
 import com.smapley.bean.ProUse;
 import com.smapley.bean.ProUseDAO;
-import com.smapley.bean.ProUseId;
 import com.smapley.bean.Project;
 import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
-import com.smapley.mode.ProjectMode;
-import com.smapley.mode.Result;
+import com.smapley.db.modes.ProjectMode;
+import com.smapley.db.modes.Result;
 import com.smapley.utils.MyData;
 
 /**
@@ -99,8 +98,8 @@ public class AddProject extends HttpServlet {
 					project.setState(0);
 					projectDAO.save(project);
 					ProUse prouse = new ProUse();
-					prouse.setId(new ProUseId(user.getUseId(), project
-							.getProId()));
+					prouse.setUser(user);
+					prouse.setProject(project);
 					prouse.setRank(0);
 					prouse.setRefresh(new Timestamp(System.currentTimeMillis()));
 					prouse.setState(0);

@@ -17,8 +17,8 @@ import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Project;
 import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.User;
-import com.smapley.entity.DynamicEntity;
-import com.smapley.mode.Result;
+import com.smapley.db.entity.DynamicEntity;
+import com.smapley.db.modes.Result;
 import com.smapley.utils.MyData;
 
 /**

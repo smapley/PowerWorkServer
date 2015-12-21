@@ -14,8 +14,8 @@ import javax.servlet.http.HttpSession;
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.User;
 import com.smapley.bean.UserDAO;
-import com.smapley.entity.UserEntity;
-import com.smapley.mode.Result;
+import com.smapley.db.entity.UserEntity;
+import com.smapley.db.modes.Result;
 import com.smapley.utils.MyData;
 
 /**
@@ -78,6 +78,7 @@ public class Account extends HttpServlet {
 				user.setTruename(truename);
 				user.setPhone(phone);
 				user.setBirthday(new Timestamp(Long.parseLong(birthday)));
+				user.setRefresh(new Timestamp(System.currentTimeMillis()));
 				userDAO.attachDirty(user);
 				request.getSession().setAttribute("user", user);
 				result.flag = MyData.SUCC;

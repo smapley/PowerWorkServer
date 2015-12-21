@@ -157,7 +157,7 @@ public class Dynamic implements java.io.Serializable {
 		this.state = state;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "dynamic")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "dynamic")
 	public Set<Praise> getPraises() {
 		return this.praises;
 	}
@@ -166,7 +166,7 @@ public class Dynamic implements java.io.Serializable {
 		this.praises = praises;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "dynamic")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "dynamic")
 	public Set<Discuss> getDiscusses() {
 		return this.discusses;
 	}

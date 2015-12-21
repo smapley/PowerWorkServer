@@ -1,12 +1,12 @@
 package com.smapley.bean;
 
 import java.sql.Timestamp;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -20,7 +20,7 @@ public class ProUse implements java.io.Serializable {
 
 	// Fields
 
-	private ProUseId id;
+	private Integer id;
 	private Project project;
 	private User user;
 	private Integer rank;
@@ -34,17 +34,15 @@ public class ProUse implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public ProUse(ProUseId id, Project project, User user, Integer rank) {
-		this.id = id;
+	public ProUse(Project project, User user, Integer rank) {
 		this.project = project;
 		this.user = user;
 		this.rank = rank;
 	}
 
 	/** full constructor */
-	public ProUse(ProUseId id, Project project, User user, Integer rank,
-			Timestamp refresh, Integer state) {
-		this.id = id;
+	public ProUse(Project project, User user, Integer rank, Timestamp refresh,
+			Integer state) {
 		this.project = project;
 		this.user = user;
 		this.rank = rank;
@@ -53,20 +51,19 @@ public class ProUse implements java.io.Serializable {
 	}
 
 	// Property accessors
-	@EmbeddedId
-	@AttributeOverrides({
-			@AttributeOverride(name = "useId", column = @Column(name = "use_id", nullable = false)),
-			@AttributeOverride(name = "proId", column = @Column(name = "pro_id", nullable = false)) })
-	public ProUseId getId() {
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "id", unique = true, nullable = false)
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(ProUseId id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "pro_id", nullable = false, insertable = false, updatable = false)
+	@JoinColumn(name = "pro_id", nullable = false)
 	public Project getProject() {
 		return this.project;
 	}
@@ -76,7 +73,7 @@ public class ProUse implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "use_id", nullable = false, insertable = false, updatable = false)
+	@JoinColumn(name = "use_id", nullable = false)
 	public User getUser() {
 		return this.user;
 	}

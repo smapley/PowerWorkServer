@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TasUseDAO {
 	private static final Logger log = LoggerFactory.getLogger(TasUseDAO.class);
 	// property constants
+	public static final String RANK = "rank";
 	public static final String STATE = "state";
 
 	private SessionFactory sessionFactory;
@@ -65,7 +66,7 @@ public class TasUseDAO {
 		}
 	}
 
-	public TasUse findById(com.smapley.bean.TasUseId id) {
+	public TasUse findById(java.lang.Integer id) {
 		log.debug("getting TasUse instance with id: " + id);
 		try {
 			TasUse instance = (TasUse) getCurrentSession().get(
@@ -105,6 +106,10 @@ public class TasUseDAO {
 			log.error("find by property name failed", re);
 			throw re;
 		}
+	}
+
+	public List<TasUse> findByRank(Object rank) {
+		return findByProperty(RANK, rank);
 	}
 
 	public List<TasUse> findByState(Object state) {

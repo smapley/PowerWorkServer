@@ -95,19 +95,6 @@ public class ProjectDAO {
 		}
 	}
 
-	public List<Project> findExample(Object data){
-		try {
-			String queryString = "from Project as model where model."
-					+ NAME + " like ?";
-			Query queryObject = getCurrentSession().createQuery(queryString);
-			queryObject.setParameter(0, data);
-			return queryObject.list();
-		} catch (RuntimeException re) {
-			log.error("find by property name failed", re);
-			throw re;
-		}
-	}
-	
 	public List findByProperty(String propertyName, Object value) {
 		log.debug("finding Project instance with property: " + propertyName
 				+ ", value: " + value);

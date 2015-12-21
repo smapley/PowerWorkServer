@@ -28,9 +28,10 @@ public class Project implements java.io.Serializable {
 	private Timestamp creDate;
 	private Timestamp refresh;
 	private Integer state;
-	private Set<Task> tasks = new HashSet<Task>(0);
-	private Set<Folder> folders = new HashSet<Folder>(0);
 	private Set<ProUse> proUses = new HashSet<ProUse>(0);
+	private Set<Task> tasks = new HashSet<Task>(0);
+	private Set<Message> messages = new HashSet<Message>(0);
+	private Set<Folder> folders = new HashSet<Folder>(0);
 	private Set<Dynamic> dynamics = new HashSet<Dynamic>(0);
 
 	// Constructors
@@ -41,16 +42,18 @@ public class Project implements java.io.Serializable {
 
 	/** full constructor */
 	public Project(String name, String picUrl, Timestamp creDate,
-			Timestamp refresh, Integer state, Set<Task> tasks,
-			Set<Folder> folders, Set<ProUse> proUses, Set<Dynamic> dynamics) {
+			Timestamp refresh, Integer state, Set<ProUse> proUses,
+			Set<Task> tasks, Set<Message> messages, Set<Folder> folders,
+			Set<Dynamic> dynamics) {
 		this.name = name;
 		this.picUrl = picUrl;
 		this.creDate = creDate;
 		this.refresh = refresh;
 		this.state = state;
-		this.tasks = tasks;
-		this.folders = folders;
 		this.proUses = proUses;
+		this.tasks = tasks;
+		this.messages = messages;
+		this.folders = folders;
 		this.dynamics = dynamics;
 	}
 
@@ -111,25 +114,7 @@ public class Project implements java.io.Serializable {
 		this.state = state;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "project")
-	public Set<Task> getTasks() {
-		return this.tasks;
-	}
-
-	public void setTasks(Set<Task> tasks) {
-		this.tasks = tasks;
-	}
-
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "project")
-	public Set<Folder> getFolders() {
-		return this.folders;
-	}
-
-	public void setFolders(Set<Folder> folders) {
-		this.folders = folders;
-	}
-
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "project")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "project")
 	public Set<ProUse> getProUses() {
 		return this.proUses;
 	}
@@ -138,7 +123,34 @@ public class Project implements java.io.Serializable {
 		this.proUses = proUses;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "project")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "project")
+	public Set<Task> getTasks() {
+		return this.tasks;
+	}
+
+	public void setTasks(Set<Task> tasks) {
+		this.tasks = tasks;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "project")
+	public Set<Message> getMessages() {
+		return this.messages;
+	}
+
+	public void setMessages(Set<Message> messages) {
+		this.messages = messages;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "project")
+	public Set<Folder> getFolders() {
+		return this.folders;
+	}
+
+	public void setFolders(Set<Folder> folders) {
+		this.folders = folders;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "project")
 	public Set<Dynamic> getDynamics() {
 		return this.dynamics;
 	}

@@ -19,11 +19,5 @@ public class MyData {
 	public static final String ERR_OutLogin = "用户已在其他客户端登陆，请重新登陆！";
 	public static final String ERR_ProjectName = "项目名已存在！";
 
-	public static ApplicationContext cxt;
-
-	public static ApplicationContext getCXT() {
-		if (cxt == null)
-			cxt = new ClassPathXmlApplicationContext("applicationContext.xml");
-		return cxt;
-	}
+	
 }
