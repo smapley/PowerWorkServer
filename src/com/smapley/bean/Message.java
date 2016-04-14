@@ -94,7 +94,7 @@ public class Message implements java.io.Serializable {
 		this.task = task;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "src_use_id")
 	public User getUserBySrcUseId() {
 		return this.userBySrcUseId;

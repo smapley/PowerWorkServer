@@ -9,7 +9,6 @@ public class DynamicEntity {
 	private int tas_id;
 	private int type;
 	private int pro_id;
-	private String pic_url;
 	private int fil_id;
 	private long refresh;
 	private int state;
@@ -22,11 +21,11 @@ public class DynamicEntity {
 	public DynamicEntity(Dynamic dynamic) {
 		dyn_id = dynamic.getDynId();
 		use_id = dynamic.getUser().getUseId();
-		if (dynamic.getTask() != null)
-			tas_id = dynamic.getTask().getTasId();
+		
 		type = dynamic.getType();
 		pro_id = dynamic.getProject().getProId();
-		pic_url = dynamic.getUser().getPicUrl();
+		if (dynamic.getTask() != null)
+			tas_id = dynamic.getTask().getTasId();
 		if (dynamic.getFile() != null)
 			fil_id = dynamic.getFile().getFilId();
 		cre_date = dynamic.getCreDate().getTime();
@@ -73,14 +72,6 @@ public class DynamicEntity {
 
 	public void setPro_id(int pro_id) {
 		this.pro_id = pro_id;
-	}
-
-	public String getPic_url() {
-		return pic_url;
-	}
-
-	public void setPic_url(String pic_url) {
-		this.pic_url = pic_url;
 	}
 
 	public int getFil_id() {

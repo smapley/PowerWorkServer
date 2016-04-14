@@ -13,9 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
-import com.smapley.bean.Message;
-import com.smapley.bean.User;
-import com.smapley.db.modes.MessageMode;
+import com.smapley.bean.ProUse;
+import com.smapley.bean.Project;
+import com.smapley.db.modes.ProUseMode;
 import com.smapley.db.modes.Result;
 import com.smapley.db.service.XDAO;
 import com.smapley.utils.MyData;
@@ -23,14 +23,14 @@ import com.smapley.utils.MyData;
 /**
  * Servlet implementation class Login
  */
-@WebServlet("/MessageList")
-public class MessageList extends HttpServlet {
+@WebServlet("/ProUseList")
+public class ProUseList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public MessageList() {
+	public ProUseList() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -62,21 +62,22 @@ public class MessageList extends HttpServlet {
 		Result result = new Result();
 		try {
 			String time = request.getParameter("time");
-			System.out.println("--MessageList--");
+			String pro_id = request.getParameter("pro_id");
+			System.out.println("--ProUseList--" + pro_id);
 
 			HttpSession session = request.getSession(false);
 			if (session != null) {
-				User user = (User) session.getAttribute("user");
-				List<MessageMode> messageModes = new ArrayList<MessageMode>();
-				for (Message message : (List<Message>) XDAO.messageDAO
-						.findByProperty("userByUseId", user)) {
-					messageModes.add(new MessageMode(message, Long
-							.parseLong(time)));
+				Project project = new Project();
+				project.setProId(Integer.parseInt(pro_id));
+				List<ProUseMode> list = new ArrayList<ProUseMode>();
+				for (ProUse proUse : (List<ProUse>) XDAO.proUseDAO
+						.findByProperty("project", project)) {
+					list.add(new ProUseMode(proUse, Long.parseLong(time)));
 				}
 				// 返回数据
 				result.flag = MyData.SUCC;
 				result.details = "";
-				result.data = JSON.toJSONString(messageModes);
+				result.data = JSON.toJSONString(list);
 
 			} else {
 				result.flag = MyData.OutLogin;
@@ -86,7 +87,7 @@ public class MessageList extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--MessageList--result--" + result.flag + "--"
+		System.out.println("--ProUseList--result--" + result.flag + "--"
 				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();

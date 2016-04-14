@@ -2,8 +2,7 @@ package com.smapley.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Timestamp;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,9 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
-import com.smapley.bean.Message;
 import com.smapley.bean.User;
-import com.smapley.db.modes.MessageMode;
+import com.smapley.db.entity.UserEntity;
 import com.smapley.db.modes.Result;
 import com.smapley.db.service.XDAO;
 import com.smapley.utils.MyData;
@@ -23,14 +21,18 @@ import com.smapley.utils.MyData;
 /**
  * Servlet implementation class Login
  */
-@WebServlet("/MessageList")
-public class MessageList extends HttpServlet {
+@WebServlet("/Account")
+public class Account extends HttpServlet {
+
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public MessageList() {
+	public Account() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -50,7 +52,6 @@ public class MessageList extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -61,22 +62,26 @@ public class MessageList extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		Result result = new Result();
 		try {
-			String time = request.getParameter("time");
-			System.out.println("--MessageList--");
-
+			String truename = request.getParameter("truename");
+			String phone = request.getParameter("phone");
+			String birthday = request.getParameter("birthday");
+			System.out.println("--Account--" + truename + "--" + phone + "--"
+					+ birthday);
 			HttpSession session = request.getSession(false);
 			if (session != null) {
-				User user = (User) session.getAttribute("user");
-				List<MessageMode> messageModes = new ArrayList<MessageMode>();
-				for (Message message : (List<Message>) XDAO.messageDAO
-						.findByProperty("userByUseId", user)) {
-					messageModes.add(new MessageMode(message, Long
-							.parseLong(time)));
-				}
-				// 返回数据
+				User user = (User) session.getAttribute(
+						"user");
+				// 判断skey
+				// 设置新信息
+				user.setTruename(truename);
+				user.setPhone(phone);
+				user.setBirthday(new Timestamp(Long.parseLong(birthday)));
+				user.setRefresh(new Timestamp(System.currentTimeMillis()));
+				XDAO.userDAO.attachDirty(user);
+				request.getSession().setAttribute("user", user);
 				result.flag = MyData.SUCC;
 				result.details = "";
-				result.data = JSON.toJSONString(messageModes);
+				result.data = JSON.toJSONString(new UserEntity(user));
 
 			} else {
 				result.flag = MyData.OutLogin;
@@ -86,7 +91,7 @@ public class MessageList extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--MessageList--result--" + result.flag + "--"
+		System.out.println("--Account--result--" + result.flag + "--"
 				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();

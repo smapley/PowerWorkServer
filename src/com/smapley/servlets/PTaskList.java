@@ -13,24 +13,24 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
-import com.smapley.bean.Message;
-import com.smapley.bean.User;
-import com.smapley.db.modes.MessageMode;
+import com.smapley.bean.Project;
+import com.smapley.bean.Task;
 import com.smapley.db.modes.Result;
+import com.smapley.db.modes.TaskMode;
 import com.smapley.db.service.XDAO;
 import com.smapley.utils.MyData;
 
 /**
  * Servlet implementation class Login
  */
-@WebServlet("/MessageList")
-public class MessageList extends HttpServlet {
+@WebServlet("/PTaskList")
+public class PTaskList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public MessageList() {
+	public PTaskList() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -50,7 +50,6 @@ public class MessageList extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -61,22 +60,25 @@ public class MessageList extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		Result result = new Result();
 		try {
+			String proId = request.getParameter("proId");
 			String time = request.getParameter("time");
-			System.out.println("--MessageList--");
+			System.out.println("--PTaskList--" + proId);
 
 			HttpSession session = request.getSession(false);
 			if (session != null) {
-				User user = (User) session.getAttribute("user");
-				List<MessageMode> messageModes = new ArrayList<MessageMode>();
-				for (Message message : (List<Message>) XDAO.messageDAO
-						.findByProperty("userByUseId", user)) {
-					messageModes.add(new MessageMode(message, Long
-							.parseLong(time)));
+				Project project = new Project();
+				project.setProId(Integer.parseInt(proId));
+				@SuppressWarnings("unchecked")
+				List<Task> listTask = XDAO.taskDAO.findByProperty("project",
+						project);
+				List<TaskMode> listtasModes = new ArrayList<TaskMode>();
+				for (Task task : listTask) {
+					listtasModes.add(new TaskMode(task, Long.parseLong(time)));
 				}
 				// 返回数据
 				result.flag = MyData.SUCC;
 				result.details = "";
-				result.data = JSON.toJSONString(messageModes);
+				result.data = JSON.toJSONString(listtasModes);
 
 			} else {
 				result.flag = MyData.OutLogin;
@@ -86,7 +88,7 @@ public class MessageList extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--MessageList--result--" + result.flag + "--"
+		System.out.println("--PTaskList--result--" + result.flag + "--"
 				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();

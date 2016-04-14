@@ -2,8 +2,7 @@ package com.smapley.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Timestamp;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
-import com.smapley.bean.Message;
+import com.smapley.bean.Folder;
 import com.smapley.bean.User;
-import com.smapley.db.modes.MessageMode;
+import com.smapley.db.entity.FolderEntity;
 import com.smapley.db.modes.Result;
 import com.smapley.db.service.XDAO;
 import com.smapley.utils.MyData;
@@ -23,14 +22,15 @@ import com.smapley.utils.MyData;
 /**
  * Servlet implementation class Login
  */
-@WebServlet("/MessageList")
-public class MessageList extends HttpServlet {
+@WebServlet("/AddFolder")
+public class AddFolder extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public MessageList() {
+	public AddFolder() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -50,7 +50,6 @@ public class MessageList extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -61,33 +60,38 @@ public class MessageList extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		Result result = new Result();
 		try {
-			String time = request.getParameter("time");
-			System.out.println("--MessageList--");
+			String name = request.getParameter("name");
+			String fol_id = request.getParameter("fol_id");
+			System.out.println("--AddFolder--" + fol_id + "--" + name);
 
 			HttpSession session = request.getSession(false);
 			if (session != null) {
-				User user = (User) session.getAttribute("user");
-				List<MessageMode> messageModes = new ArrayList<MessageMode>();
-				for (Message message : (List<Message>) XDAO.messageDAO
-						.findByProperty("userByUseId", user)) {
-					messageModes.add(new MessageMode(message, Long
-							.parseLong(time)));
-				}
-				// 返回数据
-				result.flag = MyData.SUCC;
-				result.details = "";
-				result.data = JSON.toJSONString(messageModes);
+				User user = (User) session.getAttribute(
+						"user");
+					Folder folder0 = XDAO.folderDAO.findById(Integer.decode(fol_id));
+					Folder folder = new Folder();
+					folder.setName(name);
+					folder.setFolder(folder0);
+					folder.setUser(user);
+					folder.setRefresh(new Timestamp(System.currentTimeMillis()));
+					folder.setState(0);
+					XDAO.folderDAO.save(folder);
+					// 返回数据
+					result.flag = MyData.SUCC;
+					result.details = "";
+					result.data = JSON.toJSONString(new FolderEntity(folder));
 
-			} else {
-				result.flag = MyData.OutLogin;
-				result.details = MyData.ERR_OutLogin;
-			}
+				} else {
+					result.flag = MyData.OutLogin;
+					result.details = MyData.ERR_OutLogin;
+				}
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--MessageList--result--" + result.flag + "--"
-				+ result.details + "--" + result.data);
+		System.out.println("--AddFolder--result--" + result.flag + "--" + result.details
+				+ "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();
 		out.close();
