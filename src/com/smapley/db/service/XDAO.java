@@ -17,7 +17,6 @@ import com.smapley.bean.ProjectDAO;
 import com.smapley.bean.TasUseDAO;
 import com.smapley.bean.TaskDAO;
 import com.smapley.bean.TaskDetailsDAO;
-import com.smapley.bean.UserBaseDAO;
 import com.smapley.bean.UserDAO;
 
 public class XDAO {
@@ -47,8 +46,6 @@ public class XDAO {
 	public static TaskDetailsDAO taskDetailsDAO = TaskDetailsDAO
 			.getFromApplicationContext(getCXT());
 	public static TasUseDAO tasUseDAO = TasUseDAO
-			.getFromApplicationContext(getCXT());
-	public static UserBaseDAO userBaseDAO = UserBaseDAO
 			.getFromApplicationContext(getCXT());
 
 	public static ApplicationContext cxt;

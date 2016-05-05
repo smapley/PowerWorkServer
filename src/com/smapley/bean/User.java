@@ -1,12 +1,16 @@
 package com.smapley.bean;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -23,7 +27,9 @@ public class User implements java.io.Serializable {
 	// Fields
 
 	private Integer useId;
-	private UserBase userBase;
+	private String username;
+	private String password;
+	private String skey;
 	private String nickname;
 	private String truename;
 	private String picUrl;
@@ -50,14 +56,9 @@ public class User implements java.io.Serializable {
 	public User() {
 	}
 
-	/** minimal constructor */
-	public User(Integer useId, UserBase userBase) {
-		this.useId = useId;
-		this.userBase = userBase;
-	}
 
 	/** full constructor */
-	public User(Integer useId, UserBase userBase, String nickname,
+	public User(String username, String password, String skey, String nickname,
 			String truename, String picUrl, String phone, Timestamp birthday,
 			Timestamp creDate, Timestamp refresh, Integer state,
 			Set<Message> messagesForUseId, Set<Message> messagesForSrcUseId,
@@ -65,8 +66,9 @@ public class User implements java.io.Serializable {
 			Set<Folder> folders, Set<Praise> praises,
 			Set<Feedbacks> feedbackses, Set<File> files,
 			Set<Discuss> discusses, Set<Dynamic> dynamics) {
-		this.useId = useId;
-		this.userBase = userBase;
+		this.username = username;
+		this.password = password;
+		this.skey = skey;
 		this.nickname = nickname;
 		this.truename = truename;
 		this.picUrl = picUrl;
@@ -89,7 +91,7 @@ public class User implements java.io.Serializable {
 	}
 
 	// Property accessors
-	@Id
+	@Id @GeneratedValue(strategy = IDENTITY)
 	@Column(name = "use_id", unique = true, nullable = false)
 	public Integer getUseId() {
 		return this.useId;
@@ -98,17 +100,34 @@ public class User implements java.io.Serializable {
 	public void setUseId(Integer useId) {
 		this.useId = useId;
 	}
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "use_id", unique = true, nullable = false, insertable = false, updatable = false)
-	public UserBase getUserBase() {
-		return this.userBase;
+	@Column(name = "username")
+	public String getUsername() {
+		return this.username;
 	}
 
-	public void setUserBase(UserBase userBase) {
-		this.userBase = userBase;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
+	@Column(name = "password")
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	@Column(name = "skey")
+	public String getSkey() {
+		return this.skey;
+	}
+
+	public void setSkey(String skey) {
+		this.skey = skey;
+	}
+
+	
 	@Column(name = "nickname", length = 20)
 	public String getNickname() {
 		return this.nickname;

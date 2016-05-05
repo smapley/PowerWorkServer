@@ -33,6 +33,9 @@ public class UserDAO {
 	public static final String PIC_URL = "picUrl";
 	public static final String PHONE = "phone";
 	public static final String STATE = "state";
+	public static final String USERNAME = "username";
+	public static final String PASSWORD = "password";
+	public static final String SKEY = "skey";
 
 	private SessionFactory sessionFactory;
 
@@ -142,6 +145,18 @@ public class UserDAO {
 			log.error("find all failed", re);
 			throw re;
 		}
+	}
+	
+	public List<User> findByUsername(Object username) {
+		return findByProperty(USERNAME, username);
+	}
+
+	public List<User> findByPassword(Object password) {
+		return findByProperty(PASSWORD, password);
+	}
+
+	public List<User> findBySkey(Object skey) {
+		return findByProperty(SKEY, skey);
 	}
 
 	public User merge(User detachedInstance) {

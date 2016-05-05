@@ -14,9 +14,8 @@ import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.User;
-import com.smapley.bean.UserBase;
+import com.smapley.db.entity.UserEntity;
 import com.smapley.db.modes.Result;
-import com.smapley.db.modes.UserMode;
 import com.smapley.db.service.XDAO;
 import com.smapley.utils.MyData;
 
@@ -59,23 +58,15 @@ public class Register extends HttpServlet {
 			System.out.println("--注册--" + username + "--" + password);
 
 			// 查询是否存在相同用户名
-			List<UserBase> list = XDAO.userBaseDAO.findByUsername(username);
+			List<User> list = XDAO.userDAO.findByUsername(username);
 			if (list.isEmpty()) {
 				// 创建Session
 				HttpSession session = request.getSession();
-				// 保存UserBase
-				UserBase userBase = new UserBase();
-				userBase.setUsername(username);
-				userBase.setPassword(password);
-				userBase.setSkey(session.getId());
-				userBase.setRefresh(new Timestamp(System.currentTimeMillis()));
-				userBase.setState(0);
-				XDAO.userBaseDAO.save(userBase);
-				// 添加UserBase
-				session.setAttribute("userBase", userBase);
 				// 保存User
 				User user = new User();
-				user.setUseId(userBase.getUseId());
+				user.setUsername(username);
+				user.setPassword(password);
+				user.setSkey(session.getId());
 				user.setTruename(username);
 				user.setPhone(phone);
 				user.setCreDate(new Timestamp(System.currentTimeMillis()));
@@ -83,12 +74,12 @@ public class Register extends HttpServlet {
 				user.setRefresh(new Timestamp(System.currentTimeMillis()));
 				user.setState(0);
 				XDAO.userDAO.save(user);
-				// 添加UserBase
+				// 添加User
 				session.setAttribute("user", user);
 				// 返回
 				result.flag = MyData.SUCC;
 				result.details = "";
-				result.data = JSON.toJSONString(new UserMode(userBase, user));
+				result.data = JSON.toJSONString(new UserEntity(user));
 
 			} else {
 				// 存在相同用户名
