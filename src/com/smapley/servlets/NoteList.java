@@ -10,7 +10,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Note;
@@ -62,25 +61,21 @@ public class NoteList extends HttpServlet {
 		Result result = new Result();
 		try {
 			String time = request.getParameter("time");
+			String userId = request.getParameter("userId");
 			System.out.println("--NoteList--");
 
-			HttpSession session = request.getSession(false);
-			if (session != null) {
-				User user = (User) session.getAttribute("user");
-				List<NoteMode> listNote = new ArrayList<NoteMode>();
-				for (Note note : (List<Note>) XDAO.noteDAO.findByProperty(
-						"user", user)) {
-					listNote.add(new NoteMode(note, Long.parseLong(time)));
-				}
-				// 返回数据
-				result.flag = MyData.SUCC;
-				result.details = "";
-				result.data = JSON.toJSONString(listNote);
-
-			} else {
-				result.flag = MyData.OutLogin;
-				result.details = MyData.ERR_OutLogin;
+			User user = XDAO.userDAO.findById(Integer.parseInt(userId));
+			List<NoteMode> listNote = new ArrayList<NoteMode>();
+			for (Note note : (List<Note>) XDAO.noteDAO.findByProperty("user",
+					user)) {
+				listNote.add(new NoteMode(note, Long
+						.parseLong(time == null ? "0" : time)));
 			}
+			// 返回数据
+			result.flag = MyData.SUCC;
+			result.details = "";
+			result.data = JSON.toJSONString(listNote);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -74,8 +74,6 @@ public class Register extends HttpServlet {
 				user.setRefresh(new Timestamp(System.currentTimeMillis()));
 				user.setState(0);
 				XDAO.userDAO.save(user);
-				// 添加User
-				session.setAttribute("user", user);
 				// 返回
 				result.flag = MyData.SUCC;
 				result.details = "";

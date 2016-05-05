@@ -10,7 +10,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Project;
@@ -65,23 +64,18 @@ public class SearchProject extends HttpServlet {
 		try {
 			String data = request.getParameter("data");
 			System.out.println("--SearchProject--" + data);
-			HttpSession session = request.getSession(false);
-			if (session != null) {
-				data = "%" + data + "%";
-				@SuppressWarnings("unchecked")
-				List<Project> listProject = XDAO.projectDAO.findExample(data);
-				List<ProjectEntity> listProjectEntities = new ArrayList<ProjectEntity>();
-				for (Project project : listProject) {
-					listProjectEntities.add(new ProjectEntity(project));
-				}
-				result.flag = MyData.SUCC;
-				result.details = "";
-				result.data = JSON.toJSONString(listProjectEntities);
 
-			} else {
-				result.flag = MyData.OutLogin;
-				result.details = MyData.ERR_OutLogin;
+			data = "%" + data + "%";
+			@SuppressWarnings("unchecked")
+			List<Project> listProject = XDAO.projectDAO.findExample(data);
+			List<ProjectEntity> listProjectEntities = new ArrayList<ProjectEntity>();
+			for (Project project : listProject) {
+				listProjectEntities.add(new ProjectEntity(project));
 			}
+			result.flag = MyData.SUCC;
+			result.details = "";
+			result.data = JSON.toJSONString(listProjectEntities);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

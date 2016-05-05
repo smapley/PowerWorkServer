@@ -13,7 +13,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -93,48 +92,42 @@ public class UserPicUpLoad extends HttpServlet {
 				}
 			}
 
-			HttpSession session = request.getSession(false);
-			if (session != null) {
-				User user = (User) session.getAttribute("user");
-				for (FileItem item : list) {
-					if (!item.isFormField()) {
-						// 获取表单的属性名字
-						String name = item.getFieldName();
-						System.out.println("---" + name + "---");
-						// 对传入的非 简单的字符串进行处理 ，比如说二进制的 图片，电影这些
+			User user = XDAO.userDAO.findById(Integer.parseInt(map
+					.get("userId")));
+			for (FileItem item : list) {
+				if (!item.isFormField()) {
+					// 获取表单的属性名字
+					String name = item.getFieldName();
+					System.out.println("---" + name + "---");
+					// 对传入的非 简单的字符串进行处理 ，比如说二进制的 图片，电影这些
 
-						/**
-						 * 以下三步，主要获取 上传文件的名字
-						 */
-						// 获取路径名
-						String value = item.getName();
-						// 索引到最后一个反斜杠
-						int start = value.lastIndexOf("\\");
-						// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
-						String filename = value.substring(start + 1);
-						filename = user.getUseId() + "_"
-								+ System.currentTimeMillis() + "."
-								+ filename.split("\\.")[1];
-						System.out.println("---" + filename + "---");
-						// 真正写到磁盘上
-						// 它抛出的异常 用exception 捕捉
-						item.write(new File(path, filename));// 第三方提供的
+					/**
+					 * 以下三步，主要获取 上传文件的名字
+					 */
+					// 获取路径名
+					String value = item.getName();
+					// 索引到最后一个反斜杠
+					int start = value.lastIndexOf("\\");
+					// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
+					String filename = value.substring(start + 1);
+					filename = user.getUseId() + "_"
+							+ System.currentTimeMillis() + "."
+							+ filename.split("\\.")[1];
+					System.out.println("---" + filename + "---");
+					// 真正写到磁盘上
+					// 它抛出的异常 用exception 捕捉
+					item.write(new File(path, filename));// 第三方提供的
 
-						user.setPicUrl("user_pic/" + filename);
-						user.setRefresh(new Timestamp(System
-								.currentTimeMillis()));
-						XDAO.userDAO.attachDirty(user);
-						request.getSession().setAttribute("user", user);
+					user.setPicUrl("user_pic/" + filename);
+					user.setRefresh(new Timestamp(System.currentTimeMillis()));
+					XDAO.userDAO.attachDirty(user);
+					request.getSession().setAttribute("user", user);
 
-					}
 				}
-				result.flag = MyData.SUCC;
-				result.details = "";
-				result.data = JSON.toJSONString(new UserEntity(user));
-			} else {
-				result.flag = MyData.OutLogin;
-				result.details = MyData.ERR_OutLogin;
 			}
+			result.flag = MyData.SUCC;
+			result.details = "";
+			result.data = JSON.toJSONString(new UserEntity(user));
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

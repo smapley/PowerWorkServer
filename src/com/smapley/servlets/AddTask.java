@@ -14,7 +14,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -102,119 +101,114 @@ public class AddTask extends HttpServlet {
 				map.put(item.getFieldName(), item);
 			}
 
-			HttpSession session = request.getSession(false);
-			if (session != null) {
-				User user = (User) session.getAttribute("user");
-				// 添加task
-				Task task = new Task();
-				task.setName(map.get("name").getString("utf-8"));
-				Project project = new Project();
-				project.setProId(Integer.parseInt(map.get("pro_id").getString(
-						"utf-8")));
-				task.setProject(project);
-				task.setEndDate(new Timestamp(Long.parseLong(map.get("endtime")
-						.getString("utf-8"))));
-				task.setCreDate(new Timestamp(System.currentTimeMillis()));
-				task.setRefresh(new Timestamp(System.currentTimeMillis()));
-				task.setState(0);
-				XDAO.taskDAO.save(task);
-				System.out.println(map.get("tasuse").getString("utf-8"));
-				List<TasUseEntity> listTasUse = JSON.parseObject(
-						map.get("tasuse").getString("utf-8"),
-						new TypeReference<List<TasUseEntity>>() {
-						});
-				for (int i = 0; i < listTasUse.size(); i++) {
-					TasUse tasUse = new TasUse();
-					User user2 = new User();
-					user2.setUseId(listTasUse.get(i).getUse_id());
-					tasUse.setUser(user2);
-					tasUse.setTask(task);
-					tasUse.setRank(listTasUse.get(i).getRank());
-					tasUse.setRefresh(new Timestamp(System.currentTimeMillis()));
-					tasUse.setState(0);
-					XDAO.tasUseDAO.save(tasUse);
-				}
-				for (int i = 0; i < Integer.parseInt(map.get("size").getString(
-						"utf-8")); i++) {
-					TaskDetails taskDetails = new TaskDetails();
-					taskDetails.setTask(task);
-					int type = Integer.parseInt(map.get("type" + i).getString(
-							"utf-8"));
-					taskDetails.setType(type);
-					taskDetails.setRefresh(new Timestamp(System
-							.currentTimeMillis()));
-					taskDetails.setState(0);
-					switch (type) {
-					case 5:
-						if (map.get("text" + i) != null)
-							taskDetails.setText(map.get("text" + i).getString(
-									"utf-8"));
-						break;
-					case 4:
-						if (map.get("file" + i) != null) {
-							FileItem item = map.get("file" + i);
-
-							/**
-							 * 以下三步，主要获取 上传文件的名字
-							 */
-							// 获取路径名
-							String value = item.getName();
-							// 索引到最后一个反斜杠
-							int start = value.lastIndexOf("\\");
-							// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
-							String filename = value.substring(start + 1);
-							filename = user.getUseId() + "_"
-									+ System.currentTimeMillis() + "."
-									+ filename.split("\\.")[1];
-							// 真正写到磁盘上
-							// 它抛出的异常 用exception 捕捉
-							item.write(new File(voiceFile, filename));// 第三方提供的
-							taskDetails.setPath("voice/" + filename);
-							taskDetails.setLength(new Time(Long.parseLong(map
-									.get("length" + i).getString())));
-						}
-						break;
-
-					case 3:
-						if (map.get("file" + i) != null) {
-							FileItem item1 = map.get("file" + i);
-							/**
-							 * 以下三步，主要获取 上传文件的名字
-							 */
-							// 获取路径名
-							String value1 = item1.getName();
-							// 索引到最后一个反斜杠
-							int start1 = value1.lastIndexOf("\\");
-							// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
-							String filename1 = value1.substring(start1 + 1);
-							filename1 = user.getUseId() + "_"
-									+ System.currentTimeMillis() + "."
-									+ filename1.split("\\.")[1];
-							// 真正写到磁盘上
-							// 它抛出的异常 用exception 捕捉
-							item1.write(new File(picPath, filename1));// 第三方提供的
-							taskDetails.setPath("pic/" + filename1);
-						}
-						break;
-					}
-					XDAO.taskDetailsDAO.save(taskDetails);
-				}
-				Dynamic dynamic = new Dynamic();
-				dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
-				dynamic.setUser(user);
-				dynamic.setProject(project);
-				dynamic.setTask(task);
-				dynamic.setType(1);
-				dynamic.setRefresh(new Timestamp(System.currentTimeMillis()));
-				dynamic.setState(0);
-				XDAO.dynamicDAO.save(dynamic);
-				result.flag = MyData.SUCC;
-				result.details = "";
-				result.data = JSON.toJSONString(new TaskMode(task, 0));
-			} else {
-				result.flag = MyData.OutLogin;
-				result.details = MyData.ERR_OutLogin;
+			User user = XDAO.userDAO.findById(Integer.parseInt(map
+					.get("userId").getString("utf-8")));
+			// 添加task
+			Task task = new Task();
+			task.setName(map.get("name").getString("utf-8"));
+			Project project = new Project();
+			project.setProId(Integer.parseInt(map.get("pro_id").getString(
+					"utf-8")));
+			task.setProject(project);
+			task.setEndDate(new Timestamp(Long.parseLong(map.get("endtime")
+					.getString("utf-8"))));
+			task.setCreDate(new Timestamp(System.currentTimeMillis()));
+			task.setRefresh(new Timestamp(System.currentTimeMillis()));
+			task.setState(0);
+			XDAO.taskDAO.save(task);
+			System.out.println(map.get("tasuse").getString("utf-8"));
+			List<TasUseEntity> listTasUse = JSON.parseObject(map.get("tasuse")
+					.getString("utf-8"),
+					new TypeReference<List<TasUseEntity>>() {
+					});
+			for (int i = 0; i < listTasUse.size(); i++) {
+				TasUse tasUse = new TasUse();
+				User user2 = new User();
+				user2.setUseId(listTasUse.get(i).getUse_id());
+				tasUse.setUser(user2);
+				tasUse.setTask(task);
+				tasUse.setRank(listTasUse.get(i).getRank());
+				tasUse.setRefresh(new Timestamp(System.currentTimeMillis()));
+				tasUse.setState(0);
+				XDAO.tasUseDAO.save(tasUse);
 			}
+			for (int i = 0; i < Integer.parseInt(map.get("size").getString(
+					"utf-8")); i++) {
+				TaskDetails taskDetails = new TaskDetails();
+				taskDetails.setTask(task);
+				int type = Integer.parseInt(map.get("type" + i).getString(
+						"utf-8"));
+				taskDetails.setType(type);
+				taskDetails
+						.setRefresh(new Timestamp(System.currentTimeMillis()));
+				taskDetails.setState(0);
+				switch (type) {
+				case 5:
+					if (map.get("text" + i) != null)
+						taskDetails.setText(map.get("text" + i).getString(
+								"utf-8"));
+					break;
+				case 4:
+					if (map.get("file" + i) != null) {
+						FileItem item = map.get("file" + i);
+
+						/**
+						 * 以下三步，主要获取 上传文件的名字
+						 */
+						// 获取路径名
+						String value = item.getName();
+						// 索引到最后一个反斜杠
+						int start = value.lastIndexOf("\\");
+						// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
+						String filename = value.substring(start + 1);
+						filename = user.getUseId() + "_"
+								+ System.currentTimeMillis() + "."
+								+ filename.split("\\.")[1];
+						// 真正写到磁盘上
+						// 它抛出的异常 用exception 捕捉
+						item.write(new File(voiceFile, filename));// 第三方提供的
+						taskDetails.setPath("voice/" + filename);
+						taskDetails.setLength(new Time(Long.parseLong(map.get(
+								"length" + i).getString())));
+					}
+					break;
+
+				case 3:
+					if (map.get("file" + i) != null) {
+						FileItem item1 = map.get("file" + i);
+						/**
+						 * 以下三步，主要获取 上传文件的名字
+						 */
+						// 获取路径名
+						String value1 = item1.getName();
+						// 索引到最后一个反斜杠
+						int start1 = value1.lastIndexOf("\\");
+						// 截取 上传文件的 字符串名字，加1是 去掉反斜杠，
+						String filename1 = value1.substring(start1 + 1);
+						filename1 = user.getUseId() + "_"
+								+ System.currentTimeMillis() + "."
+								+ filename1.split("\\.")[1];
+						// 真正写到磁盘上
+						// 它抛出的异常 用exception 捕捉
+						item1.write(new File(picPath, filename1));// 第三方提供的
+						taskDetails.setPath("pic/" + filename1);
+					}
+					break;
+				}
+				XDAO.taskDetailsDAO.save(taskDetails);
+			}
+			Dynamic dynamic = new Dynamic();
+			dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
+			dynamic.setUser(user);
+			dynamic.setProject(project);
+			dynamic.setTask(task);
+			dynamic.setType(1);
+			dynamic.setRefresh(new Timestamp(System.currentTimeMillis()));
+			dynamic.setState(0);
+			XDAO.dynamicDAO.save(dynamic);
+			result.flag = MyData.SUCC;
+			result.details = "";
+			result.data = JSON.toJSONString(new TaskMode(task, 0));
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

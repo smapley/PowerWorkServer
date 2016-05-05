@@ -72,8 +72,6 @@ public class Login extends HttpServlet {
 				user.setSkey(session.getId());
 				user.setRefresh(new Timestamp(System.currentTimeMillis()));
 				XDAO.userDAO.attachDirty(user);
-				// 添加User
-				session.setAttribute("user", user);
 				result.flag = MyData.SUCC;
 				result.details = "";
 				result.data = JSON.toJSONString(new UserEntity(user));

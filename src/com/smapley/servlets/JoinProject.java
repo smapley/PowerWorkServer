@@ -9,10 +9,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
-import com.baidu.yun.push.auth.PushKeyPair;
 import com.smapley.bean.User;
 import com.smapley.db.entity.UserEntity;
 import com.smapley.db.modes.Result;
@@ -63,32 +61,26 @@ public class JoinProject extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		Result result = new Result();
 		try {
-			
+
 			String truename = request.getParameter("truename");
 			String phone = request.getParameter("phone");
 			String birthday = request.getParameter("birthday");
-			System.out.println("--JoinProject--" + truename + "--" + phone + "--"
-					+ birthday);
-			HttpSession session = request.getSession(false);
-			if (session != null) {
-				User user = (User) session.getAttribute(
-						"user");
-				// 判断skey
-				// 设置新信息
-				user.setTruename(truename);
-				user.setPhone(phone);
-				user.setBirthday(new Timestamp(Long.parseLong(birthday)));
-				user.setRefresh(new Timestamp(System.currentTimeMillis()));
-				XDAO.userDAO.attachDirty(user);
-				request.getSession().setAttribute("user", user);
-				result.flag = MyData.SUCC;
-				result.details = "";
-				result.data = JSON.toJSONString(new UserEntity(user));
+			String userId = request.getParameter("userId");
+			System.out.println("--JoinProject--" + truename + "--" + phone
+					+ "--" + birthday);
+			User user = XDAO.userDAO.findById(Integer.parseInt(userId));
+			// 判断skey
+			// 设置新信息
+			user.setTruename(truename);
+			user.setPhone(phone);
+			user.setBirthday(new Timestamp(Long.parseLong(birthday)));
+			user.setRefresh(new Timestamp(System.currentTimeMillis()));
+			XDAO.userDAO.attachDirty(user);
+			request.getSession().setAttribute("user", user);
+			result.flag = MyData.SUCC;
+			result.details = "";
+			result.data = JSON.toJSONString(new UserEntity(user));
 
-			} else {
-				result.flag = MyData.OutLogin;
-				result.details = MyData.ERR_OutLogin;
-			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

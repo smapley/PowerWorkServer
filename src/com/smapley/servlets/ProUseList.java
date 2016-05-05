@@ -10,7 +10,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.ProUse;
@@ -64,25 +63,19 @@ public class ProUseList extends HttpServlet {
 			String time = request.getParameter("time");
 			String pro_id = request.getParameter("pro_id");
 			System.out.println("--ProUseList--" + pro_id);
-
-			HttpSession session = request.getSession(false);
-			if (session != null) {
-				Project project = new Project();
-				project.setProId(Integer.parseInt(pro_id));
-				List<ProUseMode> list = new ArrayList<ProUseMode>();
-				for (ProUse proUse : (List<ProUse>) XDAO.proUseDAO
-						.findByProperty("project", project)) {
-					list.add(new ProUseMode(proUse, Long.parseLong(time)));
-				}
-				// 返回数据
-				result.flag = MyData.SUCC;
-				result.details = "";
-				result.data = JSON.toJSONString(list);
-
-			} else {
-				result.flag = MyData.OutLogin;
-				result.details = MyData.ERR_OutLogin;
+			Project project = new Project();
+			project.setProId(Integer.parseInt(pro_id));
+			List<ProUseMode> list = new ArrayList<ProUseMode>();
+			for (ProUse proUse : (List<ProUse>) XDAO.proUseDAO.findByProperty(
+					"project", project)) {
+				list.add(new ProUseMode(proUse, Long
+						.parseLong(time == null ? "0" : time)));
 			}
+			// 返回数据
+			result.flag = MyData.SUCC;
+			result.details = "";
+			result.data = JSON.toJSONString(list);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

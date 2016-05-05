@@ -9,7 +9,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Folder;
@@ -25,7 +24,6 @@ import com.smapley.utils.MyData;
 @WebServlet("/AddFolder")
 public class AddFolder extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -62,36 +60,28 @@ public class AddFolder extends HttpServlet {
 		try {
 			String name = request.getParameter("name");
 			String fol_id = request.getParameter("fol_id");
+			String userId = request.getParameter("userId");
 			System.out.println("--AddFolder--" + fol_id + "--" + name);
+			User user = XDAO.userDAO.findById(Integer.parseInt(userId));
+			Folder folder0 = XDAO.folderDAO.findById(Integer.decode(fol_id));
+			Folder folder = new Folder();
+			folder.setName(name);
+			folder.setFolder(folder0);
+			folder.setUser(user);
+			folder.setRefresh(new Timestamp(System.currentTimeMillis()));
+			folder.setState(0);
+			XDAO.folderDAO.save(folder);
+			// 返回数据
+			result.flag = MyData.SUCC;
+			result.details = "";
+			result.data = JSON.toJSONString(new FolderEntity(folder));
 
-			HttpSession session = request.getSession(false);
-			if (session != null) {
-				User user = (User) session.getAttribute(
-						"user");
-					Folder folder0 = XDAO.folderDAO.findById(Integer.decode(fol_id));
-					Folder folder = new Folder();
-					folder.setName(name);
-					folder.setFolder(folder0);
-					folder.setUser(user);
-					folder.setRefresh(new Timestamp(System.currentTimeMillis()));
-					folder.setState(0);
-					XDAO.folderDAO.save(folder);
-					// 返回数据
-					result.flag = MyData.SUCC;
-					result.details = "";
-					result.data = JSON.toJSONString(new FolderEntity(folder));
-
-				} else {
-					result.flag = MyData.OutLogin;
-					result.details = MyData.ERR_OutLogin;
-				}
-			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--AddFolder--result--" + result.flag + "--" + result.details
-				+ "--" + result.data);
+		System.out.println("--AddFolder--result--" + result.flag + "--"
+				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();
 		out.close();

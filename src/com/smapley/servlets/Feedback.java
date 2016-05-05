@@ -9,7 +9,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Feedbacks;
@@ -24,7 +23,6 @@ import com.smapley.utils.MyData;
 @WebServlet("/Feedback")
 public class Feedback extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -60,25 +58,19 @@ public class Feedback extends HttpServlet {
 		Result result = new Result();
 		try {
 			String details = request.getParameter("details");
+			String userId = request.getParameter("userId");
 			System.out.println("--Feedback--" + details);
+			User user = XDAO.userDAO.findById(Integer.parseInt(userId));
+			// 设置新信息
+			Feedbacks feedbacks = new Feedbacks();
+			feedbacks.setUser(user);
+			feedbacks.setDetails(details);
+			feedbacks.setCreDate(new Timestamp(System.currentTimeMillis()));
+			XDAO.feedbacksDAO.save(feedbacks);
+			// 返回数据
+			result.flag = MyData.SUCC;
+			result.details = "";
 
-			HttpSession session = request.getSession(false);
-			if (session != null) {
-				User user = (User) session.getAttribute(
-						"user");
-				// 设置新信息
-				Feedbacks feedbacks = new Feedbacks();
-				feedbacks.setUser(user);
-				feedbacks.setDetails(details);
-				feedbacks.setCreDate(new Timestamp(System.currentTimeMillis()));
-				XDAO.feedbacksDAO.save(feedbacks);
-				// 返回数据
-				result.flag = MyData.SUCC;
-				result.details = "";
-			} else {
-				result.flag = MyData.OutLogin;
-				result.details = MyData.ERR_OutLogin;
-			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

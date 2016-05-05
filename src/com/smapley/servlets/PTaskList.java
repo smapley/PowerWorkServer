@@ -10,7 +10,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Project;
@@ -64,26 +63,21 @@ public class PTaskList extends HttpServlet {
 			String time = request.getParameter("time");
 			System.out.println("--PTaskList--" + proId);
 
-			HttpSession session = request.getSession(false);
-			if (session != null) {
-				Project project = new Project();
-				project.setProId(Integer.parseInt(proId));
-				@SuppressWarnings("unchecked")
-				List<Task> listTask = XDAO.taskDAO.findByProperty("project",
-						project);
-				List<TaskMode> listtasModes = new ArrayList<TaskMode>();
-				for (Task task : listTask) {
-					listtasModes.add(new TaskMode(task, Long.parseLong(time)));
-				}
-				// 返回数据
-				result.flag = MyData.SUCC;
-				result.details = "";
-				result.data = JSON.toJSONString(listtasModes);
-
-			} else {
-				result.flag = MyData.OutLogin;
-				result.details = MyData.ERR_OutLogin;
+			Project project = new Project();
+			project.setProId(Integer.parseInt(proId));
+			@SuppressWarnings("unchecked")
+			List<Task> listTask = XDAO.taskDAO.findByProperty("project",
+					project);
+			List<TaskMode> listtasModes = new ArrayList<TaskMode>();
+			for (Task task : listTask) {
+				listtasModes.add(new TaskMode(task, Long
+						.parseLong(time == null ? "0" : time)));
 			}
+			// 返回数据
+			result.flag = MyData.SUCC;
+			result.details = "";
+			result.data = JSON.toJSONString(listtasModes);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
