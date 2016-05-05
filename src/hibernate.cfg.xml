@@ -46,7 +46,6 @@
 		<mapping class="com.smapley.bean.Project" />
 		<mapping class="com.smapley.bean.ProUse" />
 		<mapping class="com.smapley.bean.User" />
-		<mapping class="com.smapley.bean.UserBase" />
 		<mapping class="com.smapley.bean.Message" />
 
 
