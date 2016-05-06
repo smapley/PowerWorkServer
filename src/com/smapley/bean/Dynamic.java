@@ -34,6 +34,8 @@ public class Dynamic implements java.io.Serializable {
 	private String picUrl;
 	private Timestamp refresh;
 	private Integer state;
+	private String detail;
+	private String username;
 	private Set<Praise> praises = new HashSet<Praise>(0);
 	private Set<Discuss> discusses = new HashSet<Discuss>(0);
 
@@ -45,12 +47,13 @@ public class Dynamic implements java.io.Serializable {
 
 	/** full constructor */
 	public Dynamic(Project project, User user, Task task, File file,
-			Timestamp creDate, Integer type, String picUrl, Timestamp refresh,
+			Timestamp creDate, Integer type, String detail,String picUrl, Timestamp refresh,
 			Integer state, Set<Praise> praises, Set<Discuss> discusses) {
 		this.project = project;
 		this.user = user;
 		this.task = task;
 		this.file = file;
+		this.detail=detail;
 		this.creDate = creDate;
 		this.type = type;
 		this.picUrl = picUrl;
@@ -128,6 +131,22 @@ public class Dynamic implements java.io.Serializable {
 
 	public void setType(Integer type) {
 		this.type = type;
+	}
+	@Column(name = "detail")
+	public String getDetail() {
+		return detail;
+	}
+
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
+	@Column(name = "username")
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	@Column(name = "pic_url")

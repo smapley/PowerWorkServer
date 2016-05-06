@@ -80,6 +80,7 @@ public class AddProject extends HttpServlet {
 				// 设置新信息
 				Project project = new Project();
 				project.setName(name);
+				project.setPicUrl("base/project.png");
 				project.setCreDate(new Timestamp(System.currentTimeMillis()));
 				project.setRefresh(new Timestamp(System.currentTimeMillis()));
 				project.setState(0);
@@ -95,7 +96,9 @@ public class AddProject extends HttpServlet {
 				dynamic.setUser(user);
 				dynamic.setProject(project);
 				dynamic.setType(0);
-				dynamic.setPicUrl(project.getPicUrl());
+				dynamic.setDetail(project.getName());
+				dynamic.setUsername(user.getUsername());
+				dynamic.setPicUrl(user.getPicUrl());
 				dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
 				dynamic.setRefresh(new Timestamp(System.currentTimeMillis()));
 				dynamic.setState(0);

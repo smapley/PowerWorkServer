@@ -12,11 +12,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
+import com.smapley.bean.ProUse;
 import com.smapley.bean.Project;
 import com.smapley.bean.TasUse;
 import com.smapley.bean.Task;
 import com.smapley.bean.User;
 import com.smapley.db.entity.TaskEntity;
+import com.smapley.db.entity.UserEntity;
+import com.smapley.db.modes.ProUseMode;
 import com.smapley.db.modes.Result;
 import com.smapley.db.modes.TaskMode;
 import com.smapley.db.service.XDAO;
@@ -25,14 +28,14 @@ import com.smapley.utils.MyData;
 /**
  * Servlet implementation class Login
  */
-@WebServlet("/TaskList")
-public class TaskList extends HttpServlet {
+@WebServlet("/TeamList")
+public class TeamList extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public TaskList() {
+	public TeamList() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -64,40 +67,30 @@ public class TaskList extends HttpServlet {
 		Result result = new Result();
 		try {
 			String time = request.getParameter("time");
-			String userId=request.getParameter("userId");
-			String projectId=request.getParameter("projectId");
-			System.out.println("--TaskList--");
-			
-			User user = XDAO.userDAO.findById(Integer.parseInt(userId));
-			if(projectId!=null){
-				Project project=XDAO.projectDAO.findById(Integer.parseInt(projectId));
-				List<Task> tasks=XDAO.taskDAO.findByProperty("project", project);
-				List<TaskMode> taskModes=new ArrayList<TaskMode>();
-				for(Task task:tasks){
-					taskModes.add(new TaskMode(task, Long.parseLong(time==null?"0":time)));
-				}
-				// 返回数据
-				result.flag = MyData.SUCC;
-				result.details = "";
-				result.data = JSON.toJSONString(taskModes);
-			}else{							
-				List<TasUse> tasUses = XDAO.tasUseDAO.findByProperty("user", user);
-				List<TaskMode> taskModes = new ArrayList<TaskMode>();
-				for (TasUse tasUse : tasUses) {
-					taskModes.add(new TaskMode(tasUse.getTask(), Long.parseLong(time==null?"0":time)));
-				}
+			String userId = request.getParameter("userId");
+			String projectId = request.getParameter("projectId");
+			System.out.println("--TeamList--");
 
-				// 返回数据
-				result.flag = MyData.SUCC;
-				result.details = "";
-				result.data = JSON.toJSONString(taskModes);
+			User user = XDAO.userDAO.findById(Integer.parseInt(userId));
+			Project project = XDAO.projectDAO.findById(Integer
+					.parseInt(projectId));
+			List<ProUse> proUses = XDAO.proUseDAO.findByProperty("project",
+					project);
+			List<ProUseMode> proUseModes = new ArrayList<ProUseMode>();
+			for (ProUse proUse : proUses) {
+				ProUseMode proUseMode = new ProUseMode(proUse,(long)0);
+				proUseModes.add(proUseMode);
 			}
-			
+			// 返回数据
+			result.flag = MyData.SUCC;
+			result.details = "";
+			result.data = JSON.toJSONString(proUseModes);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("--TaskList--result--" + result.flag + "--"
+		System.out.println("--TeamList--result--" + result.flag + "--"
 				+ result.details + "--" + result.data);
 		out.print(JSON.toJSONString(result));
 		out.flush();

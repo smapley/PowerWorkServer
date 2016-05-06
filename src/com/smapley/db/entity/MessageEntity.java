@@ -21,8 +21,10 @@ public class MessageEntity {
 		src_use_id = message.getUserBySrcUseId().getUseId();
 		type = message.getType();
 		details = message.getDetails();
-		pro_id = message.getProject().getProId();
-		tas_id = message.getTask().getTasId();
+		if (message.getProject() != null)
+			pro_id = message.getProject().getProId();
+		if (message.getTask() != null)
+			tas_id = message.getTask().getTasId();
 		cre_date = message.getCreDate().getTime();
 		refresh = message.getRefresh().getTime();
 		state = message.getState();

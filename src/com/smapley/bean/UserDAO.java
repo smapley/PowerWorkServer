@@ -3,11 +3,14 @@ package com.smapley.bean;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
+
 import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+
 import static org.hibernate.criterion.Example.create;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -99,7 +102,20 @@ public class UserDAO {
 			throw re;
 		}
 	}
-
+	public List findExample( Object value) {
+		log.debug("finding User instance with property: " + USERNAME
+				+ ", value: " + value);
+		try {
+			String queryString = "from User as model where model."
+					+ USERNAME + " like ?";
+			Query queryObject = getCurrentSession().createQuery(queryString);
+			queryObject.setParameter(0, value);
+			return queryObject.list();
+		} catch (RuntimeException re) {
+			log.error("find by property name failed", re);
+			throw re;
+		}
+	}
 	public List findByProperty(String propertyName, Object value) {
 		log.debug("finding User instance with property: " + propertyName
 				+ ", value: " + value);

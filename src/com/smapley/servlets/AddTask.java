@@ -203,6 +203,9 @@ public class AddTask extends HttpServlet {
 			dynamic.setProject(project);
 			dynamic.setTask(task);
 			dynamic.setType(1);
+			dynamic.setUsername(user.getUsername());
+			dynamic.setPicUrl(user.getPicUrl());
+			dynamic.setDetail(task.getName());
 			dynamic.setRefresh(new Timestamp(System.currentTimeMillis()));
 			dynamic.setState(0);
 			XDAO.dynamicDAO.save(dynamic);

@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
 import com.smapley.bean.Project;
+import com.smapley.bean.User;
 import com.smapley.db.entity.ProjectEntity;
+import com.smapley.db.entity.UserEntity;
 import com.smapley.db.modes.Result;
 import com.smapley.db.service.XDAO;
 import com.smapley.utils.MyData;
@@ -63,18 +65,30 @@ public class SearchProject extends HttpServlet {
 		Result result = new Result();
 		try {
 			String data = request.getParameter("data");
+			String type = request.getParameter("type");
 			System.out.println("--SearchProject--" + data);
-
 			data = "%" + data + "%";
-			@SuppressWarnings("unchecked")
-			List<Project> listProject = XDAO.projectDAO.findExample(data);
-			List<ProjectEntity> listProjectEntities = new ArrayList<ProjectEntity>();
-			for (Project project : listProject) {
-				listProjectEntities.add(new ProjectEntity(project));
+			if (type.equals("1")) {
+				@SuppressWarnings("unchecked")
+				List<Project> listProject = XDAO.projectDAO.findExample(data);
+				List<ProjectEntity> listProjectEntities = new ArrayList<ProjectEntity>();
+				for (Project project : listProject) {
+					listProjectEntities.add(new ProjectEntity(project));
+				}
+				result.flag = MyData.SUCC;
+				result.details = "";
+				result.data = JSON.toJSONString(listProjectEntities);
+			} else if (type.equals("0")) {
+				@SuppressWarnings("unchecked")
+				List<User> users = XDAO.userDAO.findExample(data);
+				List<UserEntity> userEntities = new ArrayList<UserEntity>();
+				for (User user : users) {
+					userEntities.add(new UserEntity(user));
+				}
+				result.flag = MyData.SUCC;
+				result.details = "";
+				result.data = JSON.toJSONString(userEntities);
 			}
-			result.flag = MyData.SUCC;
-			result.details = "";
-			result.data = JSON.toJSONString(listProjectEntities);
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

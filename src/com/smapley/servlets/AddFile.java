@@ -162,6 +162,9 @@ public class AddFile extends HttpServlet {
 				dynamic.setProject(XDAO.projectDAO.findById(pro_id));
 				dynamic.setUser(user);
 				dynamic.setFile(file);
+				dynamic.setDetail(file.getName());
+				dynamic.setUsername(user.getUsername());
+				dynamic.setPicUrl(user.getPicUrl());
 				dynamic.setType(2);
 				dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
 				dynamic.setRefresh(new Timestamp(System.currentTimeMillis()));

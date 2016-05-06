@@ -68,6 +68,7 @@ public class Register extends HttpServlet {
 				user.setPassword(password);
 				user.setSkey(session.getId());
 				user.setTruename(username);
+				user.setPicUrl("base/user.png");
 				user.setPhone(phone);
 				user.setCreDate(new Timestamp(System.currentTimeMillis()));
 				user.setBirthday(new Timestamp(System.currentTimeMillis()));
