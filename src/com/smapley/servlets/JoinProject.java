@@ -11,8 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
-import com.smapley.bean.User;
-import com.smapley.db.entity.UserEntity;
+import com.smapley.bean.Message;
+import com.smapley.bean.ProUse;
+import com.smapley.db.modes.ProUseMode;
 import com.smapley.db.modes.Result;
 import com.smapley.db.service.XDAO;
 import com.smapley.utils.MyData;
@@ -62,24 +63,23 @@ public class JoinProject extends HttpServlet {
 		Result result = new Result();
 		try {
 
-			String truename = request.getParameter("truename");
-			String phone = request.getParameter("phone");
-			String birthday = request.getParameter("birthday");
-			String userId = request.getParameter("userId");
-			System.out.println("--JoinProject--" + truename + "--" + phone
-					+ "--" + birthday);
-			User user = XDAO.userDAO.findById(Integer.parseInt(userId));
-			// 判断skey
-			// 设置新信息
-			user.setTruename(truename);
-			user.setPhone(phone);
-			user.setBirthday(new Timestamp(Long.parseLong(birthday)));
-			user.setRefresh(new Timestamp(System.currentTimeMillis()));
-			XDAO.userDAO.attachDirty(user);
-			request.getSession().setAttribute("user", user);
-			result.flag = MyData.SUCC;
-			result.details = "";
-			result.data = JSON.toJSONString(new UserEntity(user));
+			String modeId = request.getParameter("modeId");
+			String type = request.getParameter("type");
+			System.out.println("--JoinProject--" + modeId + "--" + type);
+			if (type.equals("1")) {
+				Message message = XDAO.messageDAO.findById(Integer
+						.parseInt(modeId));
+				ProUse proUse = new ProUse();
+				proUse.setProject(message.getProject());
+				proUse.setUser(message.getUserByUseId());
+				proUse.setRank(1);
+				proUse.setRefresh(new Timestamp(System.currentTimeMillis()));
+				proUse.setState(0);
+				XDAO.proUseDAO.save(proUse);
+				result.flag = MyData.SUCC;
+				result.details = "";
+				result.data = JSON.toJSONString(new ProUseMode(proUse, 0));
+			}
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

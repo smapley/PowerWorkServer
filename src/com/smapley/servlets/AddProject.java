@@ -97,7 +97,7 @@ public class AddProject extends HttpServlet {
 				dynamic.setProject(project);
 				dynamic.setType(0);
 				dynamic.setDetail(project.getName());
-				dynamic.setUsername(user.getUsername());
+				dynamic.setUsername(user.getTruename());
 				dynamic.setPicUrl(user.getPicUrl());
 				dynamic.setCreDate(new Timestamp(System.currentTimeMillis()));
 				dynamic.setRefresh(new Timestamp(System.currentTimeMillis()));

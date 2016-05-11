@@ -203,7 +203,7 @@ public class AddTask extends HttpServlet {
 			dynamic.setProject(project);
 			dynamic.setTask(task);
 			dynamic.setType(1);
-			dynamic.setUsername(user.getUsername());
+			dynamic.setUsername(user.getTruename());
 			dynamic.setPicUrl(user.getPicUrl());
 			dynamic.setDetail(task.getName());
 			dynamic.setRefresh(new Timestamp(System.currentTimeMillis()));
